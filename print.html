@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Foto - Photo Booth</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .print-container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .print-preview {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        
+        img {
+            max-width: 90vw;
+            max-height: 70vh;
+            object-fit: contain;
+            border: 3px solid #00ffff;
+            border-radius: 10px;
+        }
+        
+        .print-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-print {
+            background: linear-gradient(145deg, #ff416c, #ff4b2b);
+            color: white;
+        }
+        
+        .btn-print:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 65, 108, 0.4);
+        }
+        
+        .btn-close {
+            background: linear-gradient(145deg, #6c757d, #5a6268);
+            color: white;
+        }
+        
+        .btn-close:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.4);
+        }
+        
+        /* CSS untuk print */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .print-container {
+                padding: 0;
+            }
+            
+            .print-actions {
+                display: none;
+            }
+            
+            .print-preview {
+                box-shadow: none;
+                padding: 0;
+                border-radius: 0;
+            }
+            
+            img {
+                max-width: 100%;
+                height: auto;
+                page-break-inside: avoid;
+                border: none;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-container">
+        <div class="print-preview">
+            <img id="printImage" src="" alt="Photo Booth Print">
+        </div>
+        
+        <div class="print-actions">
+            <button class="btn-print" onclick="printPhoto()">
+                🖨️ Print Foto
+            </button>
+            <button class="btn-close" onclick="closeWindow()">
+                ✖ Tutup
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Ambil data foto dari URL parameter atau localStorage
+        window.addEventListener('load', function() {
+            // Coba ambil dari localStorage
+            const photoData = localStorage.getItem('photoPrint');
+            
+            if (photoData) {
+                document.getElementById('printImage').src = photoData;
+                
+                // Hapus data setelah diambil (optional)
+                // localStorage.removeItem('photoPrint');
+            } else {
+                alert('⚠ Tidak ada foto untuk dicetak!');
+                window.close();
+            }
+        });
+        
+        function printPhoto() {
+            window.print();
+        }
+        
+        function closeWindow() {
+            // Hapus data photo dari localStorage
+            localStorage.removeItem('photoPrint');
+            window.close();
+        }
+        
+        // Auto-close setelah print (optional)
+        window.onafterprint = function() {
+            setTimeout(() => {
+                if (confirm('Print selesai? Tutup window ini?')) {
+                    closeWindow();
+                }
+            }, 500);
+        };
+    </script>
+</body>
+</html>

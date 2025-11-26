@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Photo Booth Results</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(145deg, #2d6a4f, #40916c);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        
+        .download-container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 2px solid #00ffea;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid #00ffea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .btn {
+            background: linear-gradient(145deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="download-container">
+        <h1>📥 Download Photo Booth Results</h1>
+        <div class="loading-spinner"></div>
+        <p>Mempersiapkan file untuk download...</p>
+        <p>Jika download tidak mulai otomatis, klik tombol di bawah:</p>
+        <button class="btn" onclick="startDownload()">Download Manual</button>
+        <p style="font-size: 12px; margin-top: 20px; opacity: 0.8;">
+            File akan terdownload dalam format ZIP berisi semua foto dan video
+        </p>
+    </div>
+
+    <script>
+        // Ambil download ID dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const downloadId = urlParams.get('id');
+        
+        function startDownload() {
+            if (downloadId) {
+                // Redirect ke main app untuk download
+                window.location.href = `photobooth.html?download=${downloadId}&autostart=true`;
+            }
+        }
+        
+        // Auto start download setelah page load
+        window.onload = function() {
+            setTimeout(startDownload, 1000);
+        };
+    </script>
+</body>
+</html>

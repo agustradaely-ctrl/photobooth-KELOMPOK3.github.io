@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff416c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Photo Booth">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/192/1006/1006771.png">
+
+<!-- Mobile Optimized -->
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhotoBooth- Studio Experience</title>
+
+<!-- PREMIUM STYLES -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<!-- Library untuk ZIP dan File Saving -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+
+<!-- ✅ LUXURY PARTICLE BACKGROUND -->
+<div id="luxury-particles" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; opacity: 0.6;"></div>
+
+<!-- ===== ✅ HARUS DI BAWAH INI: HAMBURGER & SIDEBAR ===== -->
+<div id="hamburger-menu" style="display:none;">☰</div>
+<!-- Sidebar Vertikal -->
+<div id="sidebar">
+  <ul>
+    <li id="menuLogin">🔐 Login/Register</li>
+    <li id="menuHome">🏠Home</li>
+    <li id="menuGuide">📖 Petunjuk Penggunaan</li>
+    <li id="menuHubungi">📞 Hubungi Kami</li>
+  </ul>
+</div>
+
+
+<!-- ===== DASHBOARD UTAMA ===== -->
+<div id="dashboard" style="text-align:center; margin-top:80px;">
+  <h1>Selamat Datang di Web PhotoBooth</h1>
+  
+  <!-- ✅ STATUS PEMBAYARAN LEBIH DETAIL -->
+  <div id="statusPembayaran" style="margin:20px auto; padding:15px; border-radius:10px; 
+              max-width:500px; display:none;">
+    <!-- Status akan diisi oleh JavaScript -->
+  </div>
+  
+  <p>Pilih menu di bawah ini untuk melanjutkan:</p>
+  <button onclick="showSection('paket')">📦 Menu Paket</button>
+  <button onclick="showSection('pembayaran')">💳 Menu Pembayaran</button>
+  <button onclick="showSection('photobooth')">🎥 Masuk ke PhotoBooth</button>
+</div>
+
+<div id="photobooth-section" style="display:none;">
+  <h1>📸 PhotoBooth</h1>
+
+<!-- MAIN CONTAINER 3 KOLOM -->
+<div id="main-container" style="display:flex; gap:23px; justify-content:center; align-items:flex-start; max-width:1200px; margin:0 auto;">
+
+
+  <!-- KOLOM KIRI: tombol utama -->
+  <div id="left-panel" style="display:flex; flex-direction:column; gap:25px; margin-top:70px;">
+    <button id="startBtn">Nyalakan Kamera</button>
+    <button id="captureBtn">Ambil Foto</button>
+    <button id="videoBtn">Video</button>
+    <button id="deleteBtn">Hapus Foto/Video</button>
+    <button id="editBtn">Edit Foto/Video</button>
+    
+    <button id="stopBtn">Matikan Kamera</button>
+  </div>
+
+  <!-- KOLOM TENGAH: kamera & video -->
+  <div id="center-panel" style="position:relative;">
+    <div id="paketTimerDisplay" 
+     style="font-size: 24px; font-weight: bold; color: #00ffea; 
+            background: rgba(0,0,0,0.5); padding: 8px 18px; 
+            border-radius: 18px; text-align:center; display:none;
+            margin-bottom: 2px;">
+</div>
+    <div id="camera-container">
+      <video id="video" autoplay></video>
+      <canvas id="canvas" style="display:none;"></canvas>
+      <img id="frame-overlay" src="" alt="Frame Overlay">
+      <div id="countdown"></div>
+      <div id="videoTimer"></div>
+      <div id="videoControls">
+        <button id="startRecBtn">⏺</button>
+        <button id="pauseRecBtn" style="display:none;">⏸</button>
+        <button id="resumeRecBtn" style="display:none;">⏯</button>
+        <button id="stopRecBtn" style="display:none;">⏹</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KOLOM KANAN: timer, filter, frame -->
+  <div id="right-panel" style="display:flex; flex-direction:column; gap:42px; margin-top:100px;">
+    <label for="timerSelect">Timer:</label>
+    <select id="timerSelect">
+      <option value="0">Tanpa Timer</option>
+      <option value="3">3 Detik</option>
+      <option value="5">5 Detik</option>
+      <option value="10">10 Detik</option>
+    </select>
+
+    <label for="filterSelect">Filter:</label>
+    <select id="filterSelect">
+      <option value="none">Normal</option>
+      <option value="grayscale(1)">Grayscale</option>
+      <option value="sepia(1)">Sepia</option>
+      <option value="contrast(1.5)">Kontras Tinggi</option>
+      <option value="brightness(1.3)">Lebih Cerah</option>
+      <option value="blur(2px)">Blur</option>
+      <option value="brightness(110%) saturate(130%) hue-rotate(-10deg)">✨ Soft Aesthetic</option>
+        <option value="brightness(110%) saturate(130%) hue-rotate(-10deg)">✨ Soft Aesthetic</option>
+        <option value="contrast(110%) brightness(105%) saturate(120%)">🎬 Clean Premium</option>
+        <option value="hue-rotate(15deg) saturate(140%)">🔥 Warm Tone</option>
+        <option value="hue-rotate(-15deg) saturate(140%)">❄ Cool Tone</option>
+        <option value="contrast(150%) brightness(90%) saturate(120%)">🎞 Cinematic Dark</option>
+        <option value="contrast(200%) brightness(80%)">🎭 Noir Drama</option>
+        <option value="saturate(300%) contrast(150%)">🌈 Hyper Color</option>
+        <option value="brightness(115%) contrast(110%) saturate(110%)">📱 Instagram Style</option>
+        <option value="sepia(30%) brightness(110%) contrast(105%)">⚡ TikTok Vibe</option>
+        <option value="hue-rotate(180deg) invert(100%)">💫 Neon Invert</option>
+        <option value="grayscale(50%) contrast(120%)">🖤 Mono Chic</option>
+        <option value="brightness(120%) hue-rotate(90deg) saturate(150%)">🌅 Sunset Glow</option>
+
+    </select>
+
+    <label for="frameSelect">Frame:</label>
+    <select id="frameSelect">
+      <option value="">Tanpa Frame</option>
+      <option value="frame1.png">Frame 1</option>
+      <option value="frame2.png">Frame 2</option>
+      <option value="frame3.png">Frame 3</option>
+      <option value="frame4.png">Frame 4</option>
+      <option value="frame5.png">Frame 5</option>
+      <option value="frame6.png">Frame 6</option>
+    </select>
+    
+  </div>
+</div>
+
+<!-- ==================== HTML GALLERY YANG DIPERBAIKI ==================== -->
+<h3 style="text-align:center; margin-top:10px;">Hasil Foto/Video</h3>
+
+<!-- 🎠 GALLERY CONTAINER DENGAN SCROLL -->
+<div id="gallery-container" style="position: relative; max-width: 600px; margin: 0 auto; padding: 0 50px;">  
+    <!-- 🎠 TOMBOL SCROLL KIRI -->
+    <button id="scrollLeftBtn" class="scroll-btn" style="display: none;">  
+        &lt;  
+    </button>
+
+    <!-- 🎠 GALLERY DENGAN SCROLL -->
+    <div id="gallery" style="display: flex; gap: 16px; overflow-x: auto; scroll-behavior: smooth; padding: 10px 5px; max-width: 100%;"></div>
+
+    <!-- 🎠 TOMBOL SCROLL KANAN -->
+    <button id="scrollRightBtn" class="scroll-btn" style="display: none;">  
+        &gt;  
+    </button>
+</div>
+
+<!-- GANTI tombol download yang ada dengan ini -->
+<div id="download-section" style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000;">
+    <button id="downloadBtn" class="btn-download-small">📥 Download Semua Foto/Video</button>
+    <button id="printBtn" class="btn-print-small">🖨 Cetak Foto</button>
+    <button id="shareBtn" class="btn-share-small">📤 Share ke WhatsApp</button>
+</div>
+</div>
+
+<div id="previewModal" onclick="this.style.display='none'">
+  <div id="previewWrapper" onclick="event.stopPropagation()">
+    <button id="prevBtn" class="nav-btn" onclick="showPrev(event)">&lt;</button>
+    <img id="previewImage" src="">
+    <button id="nextBtn" class="nav-btn" onclick="showNext(event)">&gt;</button>
+  </div>
+</div>
+
+<section id="pembayaran-section" style="display:none; text-align:center; margin-top:30px;">
+  <h2>💳 Menu Pembayaran</h2>
+  <p>Isi data dan pilih metode pembayaran Anda.</p>
+
+  <form id="formPembayaran" style="max-width:400px; margin:auto;">
+    <label>Nama:</label><br>
+    <input type="text" id="nama" placeholder="Nama penyewa" required><br><br>
+
+    <label>Email:</label><br>
+    <input type="email" id="email" placeholder="Email penyewa" required><br><br>
+
+    <label>No. HP:</label><br>
+    <input type="tel" id="nohp" placeholder="08xxxxxxxxxx" required><br><br>
+
+    <!-- ✅ FIELD JENIS PAKET -->
+    <label>Jenis Paket:</label><br>
+    <input type="text" id="jenisPaket" readonly style="
+        background: rgba(255,255,255,0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 10px;
+        border-radius: 8px;
+        width: 100%;
+        box-sizing: border-box;
+        cursor: not-allowed;
+    "><br><br>
+
+    <!-- ✅ FIELD BARU: HARGA PAKET -->
+    <label>Harga Paket:</label><br>
+    <input type="text" id="hargaPaket" readonly style="
+        background: rgba(255,255,255,0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 10px;
+        border-radius: 8px;
+        width: 100%;
+        box-sizing: border-box;
+        cursor: not-allowed;
+        font-weight: bold;
+        color: #00ffea;
+    "><br><br>
+
+    <label>Metode Pembayaran:</label><br>
+    <select id="metode">
+      <option value="">-- Pilih Metode --</option>
+      <option value="transfer">Transfer Bank</option>
+      <option value="qris">QRIS</option>
+      <option value="ewallet">E-Wallet (Dana, OVO, Gopay)</option>
+    </select><br><br>
+
+    <button type="button" onclick="kirimPembayaran()">Kirim Pembayaran</button>
+  </form>
+
+  <div id="hasilPembayaran" style="margin-top:20px; display:none;"></div>
+</section>
+
+<!-- ===== MENU PAKET ===== -->
+<section id="paket-section" style="display:none; text-align:center; margin-top:30px;">
+  <h2>📦 Pilihan Paket PhotoBooth</h2>
+  <p>Pilih paket sesuai kebutuhan acara Anda.</p>
+
+  <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:20px; margin-top:30px;">
+
+    <!-- ✅ PAKET TRIAL BARU -->
+    <div style="background:linear-gradient(145deg, #4CAF50, #45a049); color:white; padding:20px; border-radius:10px; width:250px;">
+      <h3>🎯 Paket Trial</h3>
+      <p>Durasi: 10 menit</p>
+      <p>3 Foto + 1 Video</p>
+      <p>Harga: <strong>GRATIS</strong></p>
+      <button onclick="pilihPaket('Trial')" style="background:linear-gradient(145deg, #FF9800, #F57C00);">Coba Sekarang</button>
+    </div>
+
+    <!-- Paket Basic -->
+    <div style="background:#222; color:white; padding:20px; border-radius:10px; width:250px;">
+      <h3>📸 Paket Basic</h3>
+      <p>Durasi: 1 jam</p>
+      <p>10 Foto + 2 Video</p>
+      <p>Harga: Rp 10.000</p>
+      <button onclick="pilihPaket('Basic')">Pilih Paket Ini</button>
+    </div>
+
+    <!-- Paket Premium -->
+    <div style="background:#333; color:white; padding:20px; border-radius:10px; width:250px;">
+      <h3>🌟 Paket Premium</h3>
+      <p>Durasi: 2 jam</p>
+      <p>20 Foto + 5 Video</p>
+      <p>Harga: Rp 15.000</p>
+      <button onclick="pilihPaket('Premium')">Pilih Paket Ini</button>
+    </div>
+
+    <!-- Paket VIP -->
+    <div style="background:#444; color:white; padding:20px; border-radius:10px; width:250px;">
+      <h3>👑 Paket VIP</h3>
+      <p>Durasi: 3 jam</p>
+      <p>Unlimited Foto + 10 Video</p>
+      <p>Harga: Rp 20.000</p>
+      <button onclick="pilihPaket('VIP')">Pilih Paket Ini</button>
+    </div>
+  </div>
+</section>
+
+<!-- ✅ POPUP BUKTI PEMBAYARAN -->
+<div id="buktiPembayaranPopup" class="bukti-pembayaran-popup">
+    <div class="bukti-pembayaran-content">
+        <!-- Header -->
+        <div class="bukti-header">
+            <h3>m-Transfer</h3>
+            <div class="bank-name">PhotoBooth</div>
+        </div>
+        
+        <!-- Body -->
+        <div class="bukti-body">
+            <div class="status-berhasil">BERHASIL</div>
+            
+            <div class="detail-transaksi">
+                <div class="detail-item">
+                    <span class="label">Tanggal/Waktu</span>
+                    <span class="value" id="buktiTanggal">11/11/2025 19:35:15</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">No. Referensi</span>
+                    <span class="value" id="buktiReferensi">9503120251111935144178648B87</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Metode</span>
+                    <span class="value" id="buktiMetode">GOPAY</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Jenis Paket</span>
+                    <span class="value" id="buktiJenisPaket">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Nama Penyewa</span>
+                    <span class="value" id="buktiNama">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Email</span>
+                    <span class="value" id="buktiEmail">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">No. HP</span>
+                    <span class="value" id="buktiNoHP">-</span>
+                </div>
+            </div>
+            
+            <div class="detail-item" style="margin-top: 15px;">
+                <span class="label">TOTAL TAGIHAN</span>
+                <span class="value" style="color: #004b8d; font-size: 1.1em;" id="buktiTotal">Rp 0</span>
+            </div>
+            
+            <div style="text-align: center; margin-top: 15px; font-size: 0.8em; color: #666;">
+                Biaya Termasuk PPN (Bila ada)<br>
+                PT. PHOTOBOOTH KELOMPOK 3<br>
+                NPWP : 0013084496091000
+            </div>
+        </div>
+        
+        <!-- Footer dengan Tombol -->
+        <div class="bukti-footer">
+            <button class="btn-download" onclick="downloadBuktiPembayaran()">
+                ⬇ Download Struk
+            </button>
+            <button class="btn-oke" onclick="tutupBuktiPembayaran()">
+                OK
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="editorModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: linear-gradient(145deg, #2d6a4f, #40916c); padding: 25px; border-radius: 15px; max-width: 90%; max-height: 90%; border: 2px solid #00ffea;">
+        <h3 style="color: #00ffea; text-align: center; margin-bottom: 20px;">🎨 Edit Foto/Video</h3>
+        
+        <!-- Preview Area -->
+        <div id="editorPreview" style="margin: 20px 0; text-align: center; min-height: 300px; display: flex; justify-content: center; align-items: center;">
+            <img id="editingImage" style="max-width: 400px; max-height: 300px; border-radius: 10px; display: none; border: 2px solid white;">
+            <video id="editingVideo" style="max-width: 400px; max-height: 300px; border-radius: 10px; display: none; border: 2px solid white;" controls></video>
+        </div>
+        
+        <!-- Editor Controls -->
+        <div style="display: flex; gap: 20px; justify-content: center; margin: 25px 0; flex-wrap: wrap;">
+            <div>
+                <label style="color: white; display: block; margin-bottom: 8px; font-weight: bold;">🎭 Filter:</label>
+                <select id="editorFilterSelect" style="padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.9);">
+                    <option value="none">Normal</option>
+                    <option value="grayscale(1)">Grayscale</option>
+                    <option value="sepia(1)">Sepia</option>
+                    <option value="contrast(1.5)">Kontras Tinggi</option>
+                    <option value="brightness(1.3)">Lebih Cerah</option>
+                    <option value="blur(2px)">Blur</option>
+                </select>
+            </div>
+            
+            <div>
+                <label style="color: white; display: block; margin-bottom: 8px; font-weight: bold;">🖼 Frame:</label>
+                <select id="editorFrameSelect" style="padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.9);">
+                    <option value="">Tanpa Frame</option>
+                    <option value="frame1.png">Frame 1</option>
+                    <option value="frame2.png">Frame 2</option>
+                    <option value="frame3.png">Frame 3</option>
+                    <option value="frame4.png">Frame 4</option>
+                    <option value="frame5.png">Frame 5</option>
+                    <option value="frame6.png">Frame 6</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <button onclick="applyEditorChanges()" style="background: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                💾 Apply Changes
+            </button>
+            <button onclick="saveAsNewCopy()" style="background: #2196F3; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                📄 Save as New Copy
+            </button>
+            <button onclick="closeEditor()" style="background: #ff416c; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                ❌ Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ TAMBAHKAN HTML UNTUK MODAL PETUNJUK -->
+<div id="petunjukModal" class="modal-popup">
+    <div class="modal-content" style="max-width: 800px; max-height: 80vh;">
+        <div class="modal-header">
+            <h2>📖 Petunjuk Penggunaan PhotoBooth</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="panduan-cepat">🚀 Panduan Cepat</button>
+                <button class="tab-button" data-tab="cara-pakai">🎥 Cara Pakai</button>
+                <button class="tab-button" data-tab="paket-harga">💰 Paket & Harga</button>
+                <button class="tab-button" data-tab="faq">❓ FAQ</button>
+            </div>
+            
+            <div class="tab-content">
+                <div id="panduan-cepat" class="tab-pane active">
+                    <h3>Langkah-Langkah Cepat:</h3>
+                    <ol>
+                        <li>🔐 <strong>Login/Register</strong> - Buat akun atau masuk</li>
+                        <li>📦 <strong>Pilih Paket</strong> - Trial, Basic, Premium, atau VIP</li>
+                        <li>💳 <strong>Bayar</strong> - Untuk paket berbayar (Trial gratis)</li>
+                        <li>🎥 <strong>Photo Booth</strong> - Ambil foto & video</li>
+                        <li>📥 <strong>Download</strong> - Simpan hasil ke device</li>
+                    </ol>
+                </div>
+                
+                <div id="cara-pakai" class="tab-pane">
+                    <h3>🎥 Cara Menggunakan PhotoBooth:</h3>
+                    <div class="feature-guide">
+                        <div class="guide-item">
+                            <h4>📸 Ambil Foto</h4>
+                            <p>Klik tombol <strong>"Ambil Foto"</strong> - Bisa pakai timer 3, 5, atau 10 detik</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>🎥 Rekam Video</h4>
+                            <p>Klik tombol <strong>"Video"</strong> - Lalu ⏺ untuk mulai rekam, ⏹ untuk stop</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>🎨 Filter & Frame</h4>
+                            <p>Pilih filter dan frame dari panel kanan untuk efek khusus</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>🖼 Lihat Hasil</h4>
+                            <p>Klik thumbnail di gallery untuk preview di layar utama</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="paket-harga" class="tab-pane">
+                    <h3>💰 Pilihan Paket:</h3>
+                    <div class="package-comparison">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fitur</th>
+                                    <th>🎯 Trial</th>
+                                    <th>📸 Basic</th>
+                                    <th>🌟 Premium</th>
+                                    <th>👑 VIP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Durasi</td>
+                                    <td>10 menit</td>
+                                    <td>1 jam</td>
+                                    <td>2 jam</td>
+                                    <td>3 jam</td>
+                                </tr>
+                                <tr>
+                                    <td>Foto</td>
+                                    <td>3</td>
+                                    <td>10</td>
+                                    <td>20</td>
+                                    <td>30</td>
+                                </tr>
+                                <tr>
+                                    <td>Video</td>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>5</td>
+                                    <td>10</td>
+                                </tr>
+                                <tr>
+                                    <td>Harga</td>
+                                    <td>GRATIS</td>
+                                    <td>Rp 10.000</td>
+                                    <td>Rp 15.000</td>
+                                    <td>Rp 20.000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="faq" class="tab-pane">
+                    <h3>❓ Pertanyaan Umum:</h3>
+                    <div class="faq-item">
+                        <h4>Q: Apakah Trial benar-benar gratis?</h4>
+                        <p>A: Ya! Trial gratis dengan 3 foto + 1 video, sekali pakai per akun.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Q: Bagaimana cara download hasil?</h4>
+                        <p>A: Klik tombol 📥 Download Hasil di bagian bawah photobooth.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Q: Hasil foto/video tersimpan di mana?</h4>
+                        <p>A: Tersimpan di akun Anda, aman walaupun logout/refresh.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Q: Bisa pakai di mobile?</h4>
+                        <p>A: Bisa! Aplikasi responsive untuk desktop & mobile.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button class="btn-oke" onclick="tutupPetunjuk()">Mengerti</button>
+        </div>
+    </div>
+</div>
+
+<!-- MULTIPLE SHARE MODAL -->
+ <div id="multiShareModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: linear-gradient(145deg, #25D366, #128C7E); padding: 20px; border-radius: 15px; max-width: 90%; max-height: 90%; width: 800px; border: 2px solid #fff;">
+        <h3 style="color: white; text-align: center; margin-bottom: 15px;">📤 Pilih File untuk Dikirim via WhatsApp</h3>
+        
+        <!-- Selection Info -->
+        <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+            <p style="color: white; margin: 0; font-size: 14px;">
+                <span id="selectedCount">0</span> dari <span id="totalCount">0</span> file terpilih
+            </p>
+        </div>
+        
+        <!-- File Grid -->
+        <div id="shareFileGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 10px; margin-bottom: 15px;">
+            <!-- File items akan diisi oleh JavaScript -->
+        </div>
+        
+        <!-- WhatsApp Input -->
+        <div style="margin-bottom: 15px;">
+            <label style="color: white; display: block; margin-bottom: 5px; font-weight: bold;">📱 Nomor WhatsApp:</label>
+            <input type="tel" id="multiWhatsappNumber" placeholder="Contoh : 6281234567890" 
+                   style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #fff; background: rgba(255,255,255,0.9);">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label style="color: white; display: block; margin-bottom: 5px; font-weight: bold;">💬 Pesan:</label>
+            <textarea id="multiWhatsappMessage" 
+         style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #fff; background: rgba(255,255,255,0.9); height: 80px; resize: vertical;">
+Hai! 🎉 
+
+Saya sudah menggunakan Photo Booth dan ingin berbagi hasilnya dengan Anda.
+
+Semua file bisa didownload via link yang saya kirim. Selamat menikmati! 📸</textarea>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button onclick="sendSelectedFiles()" style="background: #fff; color: #25D366; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
+                📤 Kirim File Terpilih
+            </button>
+            <button onclick="selectAllFiles()" style="background: #2196F3; color: white; padding: 12px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                ✅ Pilih Semua
+            </button>
+            <button onclick="closeMultiShareModal()" style="background: #ff416c; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
+                ❌ Batal
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+<script src="share.js"></script>
+</body>  
+</html>

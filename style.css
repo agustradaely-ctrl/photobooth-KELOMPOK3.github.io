@@ -1,0 +1,1449 @@
+
+/* ===== GLOBAL BLUE & MINT LUXURY THEME ===== */
+:root {
+  /* Color System Blue & Mint Luxury */
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #4ECDC4 50%, #44A08D 100%);
+  --secondary-gradient: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+  --accent-mint: #4ECDC4;
+  --accent-blue: #667eea;
+  --accent-purple: #764ba2;
+  --gold-color: #FFD700;
+  --platinum: #E8E8E8;
+  --luxury-bg: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #f0fff0 100%);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --glass-effect: rgba(255, 255, 255, 0.92);
+  --text-primary: #2C3E50;
+  --text-secondary: #5D6D7E;
+  --shadow-soft: 0 12px 40px rgba(102, 126, 234, 0.15);
+  --shadow-medium: 0 20px 60px rgba(74, 205, 196, 0.2);
+  --shadow-glow: 0 0 30px rgba(74, 205, 196, 0.4);
+}
+
+/* ===== RESET & GLOBAL STYLES ===== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'SF Pro Display', -apple-system, sans-serif;
+  background: var(--luxury-bg);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(74, 205, 196, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ===== GLASS MORPHISM LUXURY ===== */
+.glass-card {
+  background: var(--glass-effect);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  border-radius: 28px;
+  box-shadow: 
+    var(--shadow-soft),
+    inset 0 1px 20px rgba(255, 255, 255, 0.6);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(102, 126, 234, 0.1) 0%, 
+    rgba(74, 205, 196, 0.1) 50%, 
+    rgba(255, 255, 255, 0.2) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glass-card:hover::before {
+  opacity: 1;
+}
+
+.glass-card::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: var(--primary-gradient);
+  border-radius: 30px;
+  z-index: -2;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glass-card:hover::after {
+  opacity: 0.3;
+}
+
+/* ===== LUXURY BUTTONS BLUE & MINT ===== */
+button, .btn-premium {
+  background: var(--primary-gradient);
+  border: none;
+  border-radius: 20px;
+  padding: 18px 36px;
+  font-weight: 800;
+  font-size: 16px;
+  color: rgba(19, 166, 199, 0.833);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+button::before, .btn-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.368), 
+    rgba(255, 255, 255, 0), 
+    rgba(255, 255, 255, 0), 
+    transparent);
+  transition: left 0.8s;
+}
+
+button:hover::before, .btn-premium:hover::before {
+  left: 100%;
+}
+
+button:hover, .btn-premium:hover {
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 
+    var(--shadow-medium),
+    var(--shadow-glow);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+button:active, .btn-premium:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* ===== MINT SPECIAL BUTTON ===== */
+.btn-mint {
+  background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+  box-shadow: 0 12px 40px rgba(74, 205, 196, 0.3);
+}
+
+.btn-mint:hover {
+  box-shadow: 
+    0 20px 50px rgba(74, 205, 196, 0.4),
+    0 0 30px rgba(74, 205, 196, 0.5);
+}
+
+/* ===== BLUE SPECIAL BUTTON ===== */
+.btn-blue {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+}
+
+.btn-blue:hover {
+  box-shadow: 
+    0 20px 50px rgba(102, 126, 234, 0.4),
+    0 0 30px rgba(102, 126, 234, 0.5);
+}
+
+
+/* ===== SIDEBAR LUXURY ===== */
+#sidebar {
+  background: linear-gradient(180deg, hsla(0, 0%, 100%, 0) 0%, hsla(172, 100%, 97%, 0.902) 100%) !important;
+  border-right: 2px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 
+    12px 0 40px rgba(102, 126, 234, 0.15),
+    inset 2px 0 20px rgba(255, 255, 255, 0.6) !important;
+}
+
+#sidebar li {
+  background: rgba(255, 255, 255, 0.8) !important;
+  margin: 15px 25px !important;
+  border-radius: 20px !important;
+  border: 2px solid rgba(255, 255, 255, 0.6) !important;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+#sidebar li::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-gradient);
+  transition: left 0.4s ease;
+  z-index: -1;
+}
+
+#sidebar li:hover::before {
+  left: 0;
+}
+
+#sidebar li:hover {
+  color: white !important;
+  transform: translateX(15px) scale(1.08) !important;
+  box-shadow: 
+    0 12px 30px rgba(102, 126, 234, 0.3),
+    0 0 20px rgba(74, 205, 196, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #f0f0f0;
+}
+
+/* HEADER */
+h1 {
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+  font-size: 2.8em;
+  margin-bottom: 20px;
+  color: #ffffff;
+  text-shadow: 0 0 20px #ff4d6d, 0 0 40px #ff4d6d66;
+}
+
+/* ===== SIDEBAR STYLING ===== */
+#sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 250px;
+  height: 100%;
+  background: linear-gradient(145deg, #1e3c72, #2a5298);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+  transition: transform 0.3s ease;
+}
+
+#sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 80px;
+}
+
+#sidebar li {
+  padding: 15px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+#sidebar li:hover {
+  background: rgba(255,255,255,0.1);
+  padding-left: 25px;
+}
+
+#sidebar li:active {
+  background: rgba(255,255,255,0.2);
+}
+
+/* ✅ PERBAIKAN SIDEBAR STATES */
+.sidebar-closed {
+    transform: translateX(-100%) !important;
+}
+
+.sidebar-open {
+    transform: translateX(0) !important;
+}
+
+/* ✅ HAMBURGER MENU STYLING YANG BENAR */
+#hamburger-menu {
+    position: fixed !important;
+    top: 15px !important;
+    left: 15px !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    z-index: 1001 !important;
+    background: rgba(30, 60, 114, 0.9) !important;
+    color: white !important;
+    padding: 10px 15px !important;
+    border-radius: 5px !important;
+    transition: all 0.3s ease !important;
+    display: none; /* Default hidden, akan dikontrol JS */
+    border: 2px solid rgba(255,255,255,0.3) !important;
+}
+
+#hamburger-menu:hover {
+    background: rgba(30, 60, 114, 1) !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 15px rgba(0,255,255,0.5) !important;
+}
+
+/* Konten Utama */
+#mainContent {
+  margin-left: 260px; /* Sesuaikan dengan lebar sidebar */
+  padding: 20px;
+  width: calc(100% - 260px);
+  transition: margin-left 0.3s ease;
+}
+
+/* ✅ Ketika sidebar tertutup, adjust main content */
+body.sidebar-closed #mainContent {
+    margin-left: 0 !important;
+    width: 100% !important;
+}
+
+/* Style untuk content sections */
+.contentSection {
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+  min-height: 400px;
+}
+
+.contentSection h2 {
+  color: #00ffff;
+  margin-bottom: 15px;
+}
+
+/* CAMERA CONTAINER */
+/* ✅ PERBESAR CAMERA CONTAINER */
+#camera-container {
+  position: relative;
+  display: none;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+  background: #111;
+  border: 2px solid rgba(255,255,255,0.1);
+  width: 100%;
+  max-width: 1000px; /* ✅ DIPERBESAR LAGI DARI 800px */
+  margin: 20px auto;
+  aspect-ratio: 4/3;
+  min-height: 600px; /* ✅ TINGGI MINIMAL */
+}
+
+/* ✅ PERBESAR VIDEO & CANVAS */
+video, canvas, #frame-overlay {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: inset 0 0 25px rgba(255,255,255,0.08);
+  transform: scaleX(-1);
+  min-height: 600px; /* ✅ PASTIKAN TINGGI CUKUP */
+}
+
+/* ✅ PERBESAR COUNTDOWN */
+#countdown {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 120px; /* ✅ DIPERBESAR DARI 95px */
+  font-weight: 900;
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff, 0 0 25px rgba(0,255,255,0.5);
+  display: none;
+}
+
+/* ✅ PERBESAR VIDEO TIMER */
+#videoTimer {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 32px; /* ✅ DIPERBESAR DARI 28px */
+  font-weight: 700;
+  color: #00ffea;
+  background: rgba(0,0,0,0.55);
+  padding: 12px 25px; /* ✅ PADDING DIPERBESAR */
+  border-radius: 20px;
+  display: none;
+  box-shadow: 0 8px 25px rgba(0,255,255,0.25);
+  text-shadow: 0 0 5px #00fff0;
+}
+
+/* FRAME OVERLAY */
+#frame-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  display: none;
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(255,255,255,0.2);
+  transform: scaleX(-1);
+  z-index: 2;
+}
+
+
+/* ===== BUTTONS PREMIUM ICON STYLE ===== */
+button, select {
+  margin: 8px;
+  padding: 14px 24px;
+  border-radius: 20px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(12px);
+}
+
+button {
+  background: linear-gradient(145deg, #ff416c, #ff4b2b);
+  color: #fff;
+  font-size: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+  position: relative;
+}
+
+button::after {
+  content: '';
+  position: absolute;
+  top:0; left:0;
+  width: 100%; height: 100%;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(255,255,255,0.25);
+  pointer-events: none;
+}
+
+button:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.55), 0 0 12px rgba(255,255,255,0.3);
+}
+
+button:active {
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.55);
+}
+
+/* SELECT */
+select {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 15px;
+  padding: 10px 16px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+/* ===== GALLERY THUMB ===== */
+#gallery {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.thumb {
+  width: 100px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 18px;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+  transition: all 0.35s ease;
+}
+
+.thumb:hover {
+  transform: scale(1.15) rotate(-1.5deg);
+  box-shadow: 0 14px 38px rgba(0,0,0,0.6);
+}
+
+/* ===== MODAL PREVIEW ===== */
+#previewModal {
+  display: none;
+  position: fixed;
+  top: 0; left:0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.95);
+  justify-content: center;
+  align-items: center;
+}
+
+#previewWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 35px;
+}
+
+#previewModal img {
+  max-width: 80%;
+  max-height: 80%;
+  border-radius: 25px;
+  box-shadow: 0 0 45px rgba(0,255,255,0.5);
+}
+
+/* NAV BUTTONS */
+.nav-btn {
+  background: rgba(0,255,255,0.2);
+  border: none;
+  border-radius: 50%;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 16px 20px;
+  transition: all 0.35s ease;
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff;
+}
+
+.nav-btn:hover {
+  background: rgba(0,255,255,0.5);
+  transform: scale(1.2);
+}
+
+/* VIDEO CONTROLS */
+#videoControls {
+  display: none;
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  gap: 14px;
+  z-index: 10;
+}
+
+/* ANIMASI SHRINK FADE */
+@keyframes floatShrinkHold {
+  0% { transform: scale(1) translateY(0); opacity: 1; }
+  30% { transform: scale(1) translateY(0); opacity: 1; }
+  100% { transform: scale(0.5) translateY(50px); opacity: 0; }
+}
+
+.float-shrink-hold {
+  animation: floatShrinkHold 2s forwards;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ===== Perbaikan dropdown select ===== */
+select {
+  color: #fff;
+  background-color: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.3);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+  padding-right: 30px;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpolygon points='0,0 12,0 6,6' fill='%23fff'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+}
+
+select option {
+  color: #000;
+  background-color: #fff;
+}
+
+select option:hover {
+  background-color: #00ffff33;
+  color: #000;
+}
+
+  video, canvas, #frame-overlay {
+    width: 100%;
+    height: auto;
+  }
+
+  #videoControls {
+    bottom: 10px;
+  }
+
+  #sidebar {
+    width: 200px;
+  }
+  
+  #mainContent {
+    margin-left: 210px;
+    width: calc(100% - 210px);
+  }
+  
+  body.sidebar-closed #mainContent {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+
+/* Pastikan frame mengikuti ukuran video/canvas */
+#frameOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* ✅ STYLE UNTUK MENU HOME FEEDBACK */
+#menuHome {
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+#menuHome:active {
+  background: rgba(255,255,255,0.3) !important;
+  transform: scale(0.95);
+}
+
+/* Animasi untuk double click feedback */
+@keyframes homePulse {
+  0% { background: rgba(255,255,255,0.1); }
+  50% { background: rgba(0,255,255,0.3); }
+  100% { background: rgba(255,255,255,0.1); }
+}
+
+.home-double-click {
+  animation: homePulse 0.6s ease;
+}
+
+.custom-swal-popup {
+    border-radius: 12px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.custom-swal-title {
+    color: #ffd700 !important; /* ✅ GOLD UNTUK KONTRA DENGAN HIJAU */
+    font-size: 1.3rem !important;
+    font-weight: bold !important;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7) !important;
+    margin-bottom: 0.8rem !important;
+}
+
+.custom-swal-text {
+    color: #ffffff !important;
+    font-size: 0.95rem !important;
+    line-height: 1.4 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.swal2-confirm {
+    background: linear-gradient(145deg, #ff416c, #ff4b2b) !important;
+    border: none !important;
+    border-radius: 18px !important;
+    padding: 8px 20px !important;
+    font-weight: bold !important;
+    font-size: 0.9rem !important;
+    box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3) !important;
+}
+
+.swal2-cancel {
+    background: linear-gradient(145deg, #6c757d, #5a6268) !important;
+    border: none !important;
+    border-radius: 18px !important;
+    padding: 8px 20px !important;
+    font-weight: bold !important;
+    font-size: 0.9rem !important;
+}
+
+/* ✅ UPDATE MAIN CONTAINER UNTUK KAMERA BESAR */
+#main-container {
+  display: flex;
+  gap: 30px; /* ✅ JARAK DIPERBESAR */
+  justify-content: center;
+  align-items: flex-start;
+  max-width: 200px; /* ✅ LEBAR MAX DIPERBESAR */
+  margin: 0 auto;
+  padding: 1px;
+}
+
+/* ✅ PERBESAR CENTER PANEL */
+#center-panel {
+  position: relative;
+  flex: 1; /* ✅ GUNAKAN FLEX UNTUK RESPONSIVE */
+  max-width: 1000px; /* ✅ MAX WIDTH BESAR */
+}
+
+/* ✅ SESUAIKAN PANEL KIRI & KANAN */
+#left-panel, #right-panel {
+  margin-top: 100px; /* ✅ SESUAIKAN POSISI VERTIKAL */
+}
+
+/* ✅ TOMBOL LEBIH BESAR UNTUK KAMERA BESAR */
+#left-panel button, #right-panel select {
+  padding: 16px 28px; /* ✅ TOMBOL LEBIH BESAR */
+  font-size: 16px;
+  min-width: 180px; /* ✅ LEBAR MINIMAL TOMBOL */
+}
+
+/* ✅ PAKET TIMER DISPLAY LEBIH BESAR */
+#paketTimerDisplay {
+  font-size: 28px; /* ✅ DIPERBESAR DARI 24px */
+  font-weight: bold;
+  color: #00ffea;
+  background: rgba(0,0,0,0.5);
+  padding: 12px 24px;
+  border-radius: 20px;
+  text-align: center;
+  display: none;
+  margin-bottom: 25px;
+  box-shadow: 0 8px 25px rgba(0,255,255,0.3);
+}
+
+/* ✅ RESPONSIVE UNTUK KAMERA BESAR */
+@media (max-width: 1200px) {
+  #main-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  #camera-container {
+    max-width: 90%;
+    min-height: 500px;
+  }
+  
+  #left-panel, #right-panel {
+    margin-top: 30px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  #camera-container {
+    max-width: 95%;
+    min-height: 400px;
+    aspect-ratio: 3/4; /* ✅ ASPECT RATIO VERTICAL DI MOBILE */
+  }
+  
+  #countdown {
+    font-size: 80px; /* ✅ SESUAIKAN UNTUK MOBILE */
+  }
+  
+  #videoTimer {
+    font-size: 24px;
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  #camera-container {
+    min-height: 300px;
+    max-width: 100%;
+  }
+  
+  video, canvas, #frame-overlay {
+    min-height: 300px;
+  }
+
+  @media (max-width: 768px) {
+    #download-section {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        gap: 8px;
+    }
+    
+    .btn-download-small, .btn-print-small {
+        padding: 10px 16px;
+        font-size: 12px;
+        min-width: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    #download-section {
+        bottom: 5px;
+        right: 5px;
+    }
+    
+    .btn-download-small, .btn-print-small {
+        padding: 8px 12px;
+        font-size: 11px;
+        min-width: 90px;
+    }
+}
+}
+
+/* ✅ POPUP BUKTI PEMBAYARAN STYLE BANK */
+.bukti-pembayaran-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+.bukti-pembayaran-content {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    width: 90%;
+    max-width: 400px;
+    border-radius: 15px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    color: #333;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* HEADER BUKTI PEMBAYARAN */
+.bukti-header {
+    background: linear-gradient(145deg, #004b8d, #0066cc);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.bukti-header h3 {
+    margin: 0;
+    font-size: 1.3em;
+    font-weight: 700;
+}
+
+.bukti-header .bank-name {
+    font-size: 0.9em;
+    opacity: 0.9;
+    margin-top: 5px;
+}
+
+/* BODY BUKTI PEMBAYARAN */
+.bukti-body {
+    padding: 20px;
+}
+
+.status-berhasil {
+    text-align: center;
+    color: #00a650;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: rgba(0, 166, 80, 0.1);
+    border-radius: 8px;
+}
+
+.detail-transaksi {
+    border-top: 2px dashed #ddd;
+    border-bottom: 2px dashed #ddd;
+    padding: 15px 0;
+    margin: 15px 0;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.detail-item .label {
+    color: #666;
+    font-weight: 500;
+}
+
+.detail-item .value {
+    color: #333;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* FOOTER DENGAN TOMBOL */
+.bukti-footer {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.btn-download {
+    background: linear-gradient(145deg, #00a650, #008c46);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.btn-oke {
+    background: linear-gradient(145deg, #004b8d, #0066cc);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 1;
+    transition: all 0.3s ease;
+}
+
+.btn-download:hover, .btn-oke:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* ANIMASI */
+@keyframes slideInBukti {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.bukti-pembayaran-content {
+    animation: slideInBukti 0.4s ease-out;
+}
+
+/* ✅ MODAL PETUNJUK PENGGUNAAN */
+.modal-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #1e3c72, #2a5298);
+    border-radius: 15px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow: hidden;
+    color: white;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #00ffea;
+}
+
+.close-modal {
+    font-size: 28px;
+    cursor: pointer;
+    color: #ff416c;
+}
+
+.close-modal:hover {
+    color: #ff4b2b;
+}
+
+/* TAB SYSTEM */
+.tab-container {
+    padding: 0;
+}
+
+.tab-buttons {
+    display: flex;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab-button {
+    flex: 1;
+    padding: 15px;
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.tab-button.active {
+    background: rgba(255, 65, 108, 0.3);
+    color: #fff;
+    border-bottom: 3px solid #ff416c;
+}
+
+.tab-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tab-content {
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+/* CONTENT STYLING */
+.tab-pane h3 {
+    color: #00ffea;
+    margin-top: 0;
+}
+
+.tab-pane ol {
+    line-height: 1.8;
+    padding-left: 20px;
+}
+
+.tab-pane li {
+    margin-bottom: 10px;
+}
+
+.guide-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.guide-item h4 {
+    margin: 0 0 10px 0;
+    color: #ffd700;
+}
+
+.package-comparison table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.package-comparison th,
+.package-comparison td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.package-comparison th {
+    background: rgba(255, 65, 108, 0.3);
+    color: #ffd700;
+}
+
+.package-comparison tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.faq-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.faq-item h4 {
+    margin: 0 0 10px 0;
+    color: #ffd700;
+}
+
+.faq-item p {
+    margin: 0;
+    color: #ccc;
+}
+
+.modal-footer {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+}
+
+.btn-oke {
+    background: linear-gradient(145deg, #ff416c, #ff4b2b);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-oke:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+}
+
+/* ==== TOMBOL DOWNLOAD & CETAK KECIL ==== */
+.btn-download-small, .btn-print-small, .btn-share-small {
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 15px;
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    letter-spacing: 0.5px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    min-width: 120px;
+    text-align: center;
+}
+
+.btn-download-small {
+    background: linear-gradient(145deg, #0072ff, #00c6ff);
+}
+
+.btn-print-small {
+    background: linear-gradient(145deg, #ff8c00, #ff2d00);
+}
+
+.btn-share-small {
+    background: linear-gradient(145deg, #0072ff, #00c6ff);
+}
+
+.btn-download-small:hover, .btn-print-small:hover, .btn-share-small:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-medium), var(--shadow-glow);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-download-small:active, .btn-print-small:active, .btn-share-small:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+/* Efek ripple untuk tombol kecil */
+.btn-download-small::before, .btn-print-small::before, .btn-share-small::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.btn-download-small:hover::before, .btn-print-small:hover::before, .btn-share-small:hover::before {
+    left: 100%;
+}
+
+/* 🎠 PERBAIKI GALLERY CONTAINER */
+#gallery-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 60px;
+    overflow: hidden;
+    border: 2px solid rgba(0, 255, 255, 0.3); /* 🎯 BORDER UNTUK DEBUG */
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* 🎠 PERBAIKI GALLERY - FORCE SINGLE LINE */
+#gallery {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x proximity;
+    padding: 15px 10px;
+    width: 100%;
+    min-height: 135px; /* 🎯 TINGGI TETAP */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    
+    /* 🎯 PROPERTI PENTING: FORCE SINGLE LINE */
+    flex-wrap: nowrap !important; /* 🎯 JANGAN PERNAH WRAP KE BARIS BARU */
+    white-space: nowrap !important;
+    max-width: none !important; /* 🎯 HAPUS BATASAN LEBAR */
+}
+
+#gallery::-webkit-scrollbar {
+    display: none;
+}
+
+/* 🎠 THUMBNAIL - UKURAN TETAP */
+.thumb, .gallery > div {
+    width: 140px !important;
+    height: 105px !important;
+    border-radius: 12px;
+    object-fit: cover;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    flex-shrink: 0 !important;
+    display: block !important;
+    flex: 0 0 auto !important;
+    scroll-snap-align: start;
+}
+
+/* 🎠 TOMBOL SCROLL */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 255, 255, 0.9) !important;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #000 !important;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+.scroll-btn:hover {
+    background: rgba(0, 255, 255, 1) !important;
+    transform: translateY(-50%) scale(1.1);
+}
+
+#scrollLeftBtn {
+    left: 5px;
+}
+
+#scrollRightBtn {
+    right: 5px;
+}
+
+/* 🎠 PASTIKAN UKURAN GALLERY CONSISTENT */
+#gallery {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    width: 100% !important;
+    max-width: 480px !important; /* 🎯 3 THUMBNAIL: (140+15)*3 = 465px */
+    min-height: 135px !important;
+    scroll-behavior: smooth !important;
+}
+
+/* 🎠 THUMBNAIL SIZE YANG PASTI */
+.thumb, #gallery > div {
+    width: 140px !important;
+    height: 105px !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    display: block !important;
+}
+
+/* MULTI SHARE MODAL STYLES */
+.share-file-item {
+    position: relative;
+    border: 3px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.share-file-item:hover {
+    transform: scale(1.05);
+}
+
+.share-file-item.selected {
+    border-color: #25D366;
+    box-shadow: 0 0 10px rgba(37, 211, 102, 0.5);
+}
+
+.share-file-checkbox {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background: rgba(37, 211, 102, 0.9);
+    border: 2px solid white;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.share-file-item.selected .share-file-checkbox {
+    display: flex;
+}
+
+.share-file-preview {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.share-file-type {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+}
+
+/* ✅ CSS YANG BENAR UNTUK MULTI SHARE MODAL */
+#multiShareModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.95); /* ✅ BACKGROUND TRANSPARAN */
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Container modal (kotak putih) */
+#multiShareModal > div {
+    background: linear-gradient(145deg, #25D366, #128C7E);
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 90%;
+    max-height: 90%;
+    width: 800px;
+    border: 2px solid #fff;
+    position: relative; /* ✅ PASTIKAN POSITION RELATIVE */
+    z-index: 10001; /* ✅ LEBIH TINGGI DARI BACKGROUND */
+}
+
+/* ✅ CSS UNTUK POPUP DI DEPAN MODAL */
+.swal-front {
+    z-index: 10002 !important; /* Lebih tinggi dari modal share */
+}
+
+.swal-front-popup {
+    z-index: 10003 !important;
+}
+
+/* ✅ PERBAIKAN DROPDOWN EDITOR - TRANSPARAN SEPERTI TOMBOL LAIN */
+#editorFilterSelect,
+#editorFrameSelect {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+    font-size: 14px !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* ✅ HOVER EFFECT */
+#editorFilterSelect:hover,
+#editorFrameSelect:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ✅ FOCUS EFFECT */
+#editorFilterSelect:focus,
+#editorFrameSelect:focus {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: #00ffea !important;
+    outline: none !important;
+    box-shadow: 0 0 10px rgba(0, 255, 234, 0.5) !important;
+}
+
+/* ✅ OPTION STYLING (untuk dropdown options) */
+#editorFilterSelect option,
+#editorFrameSelect option {
+    background: rgba(0, 0, 0, 0.9) !important;
+    color: white !important;
+    padding: 10px !important;
+}
+
+/* ✅ DISABLED STATE */
+#editorFilterSelect:disabled {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    cursor: not-allowed !important;
+}
