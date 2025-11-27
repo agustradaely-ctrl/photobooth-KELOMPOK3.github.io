@@ -24,7 +24,7 @@ function openMultiShareModal() {
     
     // Reset form
     document.getElementById('multiWhatsappNumber').value = '';
-    document.getElementById('multiWhatsappMessage').value = 'Hai! Ini hasil foto/video saya dari Photo Booth 🎉';
+    document.getElementById('multiWhatsappMessage').value = 'Hai! Terimkasih sudah menggunakan PhotoBooth \nIni hasil foto/video Anda dari Photo Booth 🎉';
     
     // Tampilkan modal
     document.getElementById('multiShareModal').style.display = 'flex';
@@ -232,7 +232,7 @@ async function sendMainMessage(phoneNumber, message, fileCount) {
     // Buat download link yang nyata
     const downloadLink = await createDownloadLink();
     
-    const finalMessage = `${message}\n\n📊 Total: ${fileCount} file\n📸 Foto: ${photoCount}\n🎥 Video: ${videoCount}\n\n⬇ Download semua file di link berikut:\n${downloadLink}\n\nLink berlaku 24 jam ⏰`;
+    const finalMessage = `${message}\n\n Total: ${fileCount} file\n Foto: ${photoCount}\n🎥 Video: ${videoCount}\n\n⬇ Download semua file di link berikut:\n${downloadLink}\n\nLink berlaku 24 jam ⏰`;
     const encodedMessage = encodeURIComponent(finalMessage);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     
@@ -284,7 +284,7 @@ function getOptimizedMessage(message, downloadLink, fileCount, photoCount, video
         optimizedMessage = `${message}\n\n📁 ${fileCount} files (${photoCount}📸 ${videoCount}🎥)\n\n👇 TAP LINK INI:\n${downloadLink}\n\n⏰ 24 jam`;
     } else {
         // Format untuk desktop
-        optimizedMessage = `${message}\n\n📊 Total Files: ${fileCount}\n📸 Photos: ${photoCount}\n🎥 Videos: ${videoCount}\n\n⬇ CLICK THIS LINK:\n${downloadLink}\n\nLink expires in 24 hours ⏰`;
+        optimizedMessage = `${message}\n\n Total Files: ${fileCount}\n📸 Photos: ${photoCount}\n🎥 Videos: ${videoCount}\n\n⬇ CLICK THIS LINK:\n${downloadLink}\n\nLink expires in 24 hours ⏰`;
     }
     
     return optimizedMessage;
@@ -424,4 +424,5 @@ async function downloadFilesFromLink(downloadData) {
             confirmButtonText: 'Mengerti'
         });
     }
+
 }
