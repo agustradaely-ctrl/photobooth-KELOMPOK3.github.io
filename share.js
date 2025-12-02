@@ -265,6 +265,7 @@ async function sendToWhatsApp() {
 }
 
 // 🔥 FUNGSI BUAT DOWNLOAD LINK - VERSI BARU (sessionStorage + redirect)
+// VERSI SEDERHANA YANG PASTI BERFUNGSI
 async function createDownloadLink(visitorName) {
     const downloadId = 'dl_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     
@@ -276,7 +277,6 @@ async function createDownloadLink(visitorName) {
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     };
     
-    // Simpan file data
     for (const fileIndex of selectedFiles) {
         const item = galleryImages[fileIndex];
         downloadData.files.push({
@@ -286,16 +286,19 @@ async function createDownloadLink(visitorName) {
         });
     }
     
-    // SIMPAN KE localStorage
     localStorage.setItem(`download_${downloadId}`, JSON.stringify(downloadData));
     
-    const baseUrl = window.location.origin + window.location.pathname;
-    const folderPath = baseUrl.substring(0, baseUrl.lastIndexOf('/'));
-    const downloadUrl = `${folderPath}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
-
-    console.log("🔗 Generated URL:", downloadUrl);
+    // 🔥 BUAT URL ABSOLUT
+    const domain = window.location.origin; // https://username.github.io
+    const path = window.location.pathname; // /reponame/index.html
+    const repoPath = path.split('/').slice(0, 2).join('/'); // /reponame
+    
+    const downloadUrl = `${domain}${repoPath}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
+    
+    console.log("Generated URL:", downloadUrl);
     return downloadUrl;
-    }
+}
+
 // 🔥 FUNGSI TUTUP MODAL
 function closeModal() {
     document.getElementById('multiShareModal').style.display = 'none';
@@ -363,6 +366,7 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
 
 
