@@ -2,9 +2,28 @@
 console.log("✅ share.js loaded");
 
 let selectedFiles = [];
+// Tambah fungsi cleanup di share.js (opsional)
+function cleanupOldDownloads() {
+    // Hapus data lama > 24 jam
+    const now = Date.now();
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('meta_')) {
+            try {
+                const data = JSON.parse(localStorage.getItem(key));
+                if (data.expiresAt && new Date(data.expiresAt) < new Date()) {
+                    localStorage.removeItem(key);
+                    console.log("Cleaned up:", key);
+                }
+            } catch (e) {}
+        }
+    }
+}
+
 
 // 🔥 FUNGSI UNTUK BUKA MODAL
 function openShareModal() {
+    cleanupOldDownloads();
     console.log("🎯 Membuka modal share...");
     
     // Cek jika ada foto/video
@@ -265,7 +284,6 @@ async function sendToWhatsApp() {
 }
 
 // 🔥 FUNGSI BUAT DOWNLOAD LINK - VERSI BARU (sessionStorage + redirect)
-// VERSI SEDERHANA YANG PASTI BERFUNGSI
 async function createDownloadLink(visitorName) {
     const downloadId = 'dl_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     
@@ -277,25 +295,37 @@ async function createDownloadLink(visitorName) {
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     };
     
+    // Simpan HANYA data kecil (metadata), bukan file besar
     for (const fileIndex of selectedFiles) {
         const item = galleryImages[fileIndex];
         downloadData.files.push({
             type: item.type,
-            data: item.data,
+            // 🔥 JANGAN simpan data base64 lengkap, simpan di sessionStorage
+            dataKey: `file_${downloadId}_${fileIndex}`, // Key untuk ambil nanti
             timestamp: item.timestamp
         });
+        
+        // 🔥 SIMPAN DATA FILE KE sessionStorage DENGAN KEY TERPISAH
+        sessionStorage.setItem(`file_${downloadId}_${fileIndex},, item.data);
     }
     
-    localStorage.setItem(`download_${downloadId}`, JSON.stringify(downloadData));
+    // 🔥 SIMPAN METADATA KE localStorage (kecil saja)
+    localStorage.setItem(`meta_${downloadId}`, JSON.stringify({
+        id: downloadId,
+        name: visitorName,
+        fileCount: selectedFiles.length,
+        createdAt: downloadData.createdAt,
+        expiresAt: downloadData.expiresAt
+    }));
     
-    // 🔥 BUAT URL ABSOLUT
-    const domain = window.location.origin; // https://username.github.io
-    const path = window.location.pathname; // /reponame/index.html
-    const repoPath = path.split('/').slice(0, 2).join('/'); // /reponame
+    // 🔥 BUAT URL
+    const domain = window.location.origin;
+    const path = window.location.pathname;
+    const repoPath = path.split('/').slice(0, 2).join('/');
     
     const downloadUrl = `${domain}${repoPath}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
     
-    console.log("Generated URL:", downloadUrl);
+    console.log("✅ Link dibuat dengan metadata");
     return downloadUrl;
 }
 
@@ -366,6 +396,7 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
 
 
