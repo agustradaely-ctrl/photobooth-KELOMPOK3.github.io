@@ -27,6 +27,28 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
+<style>
+/* 🔥 CSS UNTUK POPUP DI DEPAN MODAL */
+.swal-container-front {
+    z-index: 100000 !important;
+    position: fixed !important;
+}
+
+.swal-front {
+    z-index: 100001 !important;
+    position: relative !important;
+}
+
+/* Pastikan backdrop juga di depan */
+.swal2-container {
+    z-index: 100000 !important;
+}
+
+/* Override untuk modal share */
+#multiShareModal {
+    z-index: 10000; /* Tetap di bawah popup */
+}
+</style>
 <body>
 
 <!-- ✅ LUXURY PARTICLE BACKGROUND -->
@@ -532,48 +554,70 @@
     </div>
 </div>
 
-<!-- MULTIPLE SHARE MODAL -->
- <div id="multiShareModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center;">
-    <div style="background: linear-gradient(145deg, #25D366, #128C7E); padding: 20px; border-radius: 15px; max-width: 90%; max-height: 90%; width: 800px; border: 2px solid #fff;">
-        <h3 style="color: white; text-align: center; margin-bottom: 15px;">📤 Pilih File untuk Dikirim via WhatsApp</h3>
+<!-- MODAL SHARE DENGAN INPUT NAMA -->
+<div id="multiShareModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: linear-gradient(145deg, #25D366, #128C7E); padding: 25px; border-radius: 15px; max-width: 500px; width: 90%; border: 2px solid #fff;">
         
-        <!-- Selection Info -->
-        <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
-            <p style="color: white; margin: 0; font-size: 14px;">
-                <span id="selectedCount">0</span> dari <span id="totalCount">0</span> file terpilih
-            </p>
+        <h2 style="color: white; text-align: center; margin-bottom: 20px;">📤 Share ke WhatsApp</h2>
+        
+        <!-- 🔥 INPUT NAMA BARU -->
+        <div style="margin-bottom: 15px;">
+            <label style="color: white; display: block; margin-bottom: 5px; font-weight: bold;">👤 Nama Pengunjung:</label>
+            <input type="text" id="visitorName" placeholder="Masukkan nama Anda" 
+                   style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #fff; background: rgba(255,255,255,0.9); font-size: 16px;">
+            <small style="color: rgba(255,255,255,0.7); font-size: 12px;">Nama akan muncul di pesan WhatsApp</small>
         </div>
         
-        <!-- File Grid -->
-        <div id="shareFileGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 10px; margin-bottom: 15px;">
-            <!-- File items akan diisi oleh JavaScript -->
+        <!-- File Selection -->
+        <div style="margin-bottom: 20px;">
+            <p style="color: white; margin-bottom: 10px; font-weight: bold;">
+                📁 Pilih File untuk Dikirim:
+            </p>
+            <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+                <p style="color: white; margin: 0; font-size: 14px;">
+                    <span id="selectedCount">0</span> dari <span id="totalCount">0</span> file terpilih
+                </p>
+            </div>
+            
+            <div id="shareFileGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; max-height: 200px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                <!-- File items akan diisi -->
+                <p style="color: white; text-align: center; grid-column: 1 / -1;">Loading file...</p>
+            </div>
         </div>
         
         <!-- WhatsApp Input -->
-        <div style="margin-bottom: 15px;">
+        <div style="margin-bottom: 20px;">
             <label style="color: white; display: block; margin-bottom: 5px; font-weight: bold;">📱 Nomor WhatsApp:</label>
-            <input type="tel" id="multiWhatsappNumber" placeholder="Contoh : 6281234567890" 
-                   style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #fff; background: rgba(255,255,255,0.9);">
+            <input type="tel" id="multiWhatsappNumber" placeholder="6281234567890" 
+                   style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #fff; background: rgba(255,255,255,0.9); font-size: 16px;">
+            <small style="color: rgba(255,255,255,0.7); font-size: 12px;">Contoh: 6281234567890</small>
         </div>
         
-        <div style="margin-bottom: 15px;">
+        <!-- Message Input -->
+        <div style="margin-bottom: 20px;">
             <label style="color: white; display: block; margin-bottom: 5px; font-weight: bold;">💬 Pesan:</label>
             <textarea id="multiWhatsappMessage" 
-         style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #fff; background: rgba(255,255,255,0.9); height: 80px; resize: vertical;">
-Terimakasih sudah menggunakan PhotoBooth
+                     style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #fff; background: rgba(255,255,255,0.9); height: 120px; resize: vertical;">
+Ini hasil foto/video saya dari Photo Booth 🎉
 
-Semua file hasil Foto/Video Anda bisa didownload via link yang saya kirim. Selamat menikmati! 📸</textarea>
+Nama: #NAMA#
+Total: #COUNT# file (#PHOTOS# foto + #VIDEOS# video)
+
+Klik link di bawah untuk download:
+#LINK#
+
+Link berlaku 24 jam. Terima kasih! 📸</textarea>
         </div>
         
         <!-- Action Buttons -->
         <div style="display: flex; gap: 10px; justify-content: center;">
-            <button onclick="sendSelectedFiles()" style="background: #fff; color: #25D366; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
-                📤 Kirim File Terpilih
+            <button id="sendWhatsAppBtn" style="background: #fff; color: #25D366; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
+                📤 Kirim ke WhatsApp
             </button>
-            <button onclick="selectAllFiles()" style="background: #2196F3; color: white; padding: 12px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+            <button id="selectAllBtn" style="background: #2196F3; color: white; padding: 12px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
                 ✅ Pilih Semua
             </button>
-            <button onclick="closeMultiShareModal()" style="background: #ff416c; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
+            <button id="cancelBtn" style="background: #ff416c; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
                 ❌ Batal
             </button>
         </div>
