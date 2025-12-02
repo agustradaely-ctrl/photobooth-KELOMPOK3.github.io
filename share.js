@@ -2,28 +2,8 @@
 console.log("✅ share.js loaded");
 
 let selectedFiles = [];
-// Tambah fungsi cleanup di share.js (opsional)
-function cleanupOldDownloads() {
-    // Hapus data lama > 24 jam
-    const now = Date.now();
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith('meta_')) {
-            try {
-                const data = JSON.parse(localStorage.getItem(key));
-                if (data.expiresAt && new Date(data.expiresAt) < new Date()) {
-                    localStorage.removeItem(key);
-                    console.log("Cleaned up:", key);
-                }
-            } catch (e) {}
-        }
-    }
-}
-
-
 // 🔥 FUNGSI UNTUK BUKA MODAL
 function openShareModal() {
-    cleanupOldDownloads();
     console.log("🎯 Membuka modal share...");
     
     // Cek jika ada foto/video
@@ -396,6 +376,7 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
 
 
