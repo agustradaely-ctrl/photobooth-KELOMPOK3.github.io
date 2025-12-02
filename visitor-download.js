@@ -1,58 +1,79 @@
 // download.js - Khusus untuk halaman download pengunjung
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("=== DOWNLOAD PAGE ===");
-    
     const urlParams = new URLSearchParams(window.location.search);
     const downloadId = urlParams.get('download');
     const userName = urlParams.get('name') || 'Pengunjung';
     
-    console.log("Params:", { downloadId, userName });
+    console.log("🔍 Mencari data untuk:", downloadId);
     
     if (!downloadId) {
         showError("Link tidak valid!");
         return;
     }
     
-    // 🔥 1. AMBIL METADATA DARI localStorage
-    const metaData = JSON.parse(localStorage.getItem(`meta_${downloadId}`) || '{}');
+    // 🔥 CARI DATA DENGAN BERBAGAI KEMUNGKINAN KEY
+    let downloadData = null;
     
-    if (!metaData.id) {
-        showError("Metadata tidak ditemukan!");
-        return;
-    }
+    // Coba beberapa format key
+    const possibleKeys = [
+        `download_${downloadId}`,      // Format baru
+        downloadId,                    // Tanpa prefix
+        `dl_${downloadId}`,           // Dengan dl_
+        `${downloadId}_files`,        // Dengan suffix
+        `photo_${downloadId}`         // Mungkin dengan photo_
+    ];
     
-    // 🔥 2. BANGUN ULANG DATA DARI sessionStorage
-    const downloadData = {
-        id: metaData.id,
-        name: metaData.name,
-        files: [],
-        createdAt: metaData.createdAt,
-        expiresAt: metaData.expiresAt
-    };
-    
-    // 🔥 3. AMBIL SETIAP FILE DARI sessionStorage
-    for (let i = 0; i < metaData.fileCount; i++) {
-        const fileKey = `file_${downloadId}_${i}`;
-        const fileData = sessionStorage.getItem(fileKey);
-        
-        if (fileData) {
-            // Tentukan type dari data (photo atau video)
-            const type = fileData.startsWith('data:image') ? 'photo' : 'video';
-            downloadData.files.push({
-                type: type,
-                data: fileData,
-                timestamp: Date.now()
-            });
+    for (const key of possibleKeys) {
+        const data = localStorage.getItem(key);
+        if (data) {
+            console.log(`✅ Data ditemukan dengan key: ${key}`);
+            try {
+                downloadData = JSON.parse(data);
+                break;
+            } catch (e) {
+                console.error(`Error parsing key ${key}:`, e);
+            }
         }
     }
     
-    console.log("Data dibangun ulang:", downloadData);
+    // 🔥 JIKA TIDAK DITEMUKAN, CARI SEMUA KEY YANG MUNGKIN
+    if (!downloadData) {
+        console.log("🔎 Mencari di semua localStorage keys...");
+        
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.includes(downloadId) || key.includes('download') || key.includes('dl_')) {
+                console.log(`Checking key: ${key}`);
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    if (data && data.files && Array.isArray(data.files)) {
+                        console.log(`✅ Found with key: ${key}`);
+                        downloadData = data;
+                        break;
+                    }
+                } catch (e) {}
+            }
+        }
+    }
     
-    if (downloadData.files.length === 0) {
-        showError("File tidak ditemukan di session!");
+    // 🔥 JIKA MASIH TIDAK DITEMUKAN
+    if (!downloadData || !downloadData.files) {
+        showError(`
+            Data tidak ditemukan!<br><br>
+            <strong>Penyebab umum:</strong><br>
+            1. Dibuka di browser/device berbeda<br>
+            2. Cache browser dibersihkan<br>
+            3. Sesi sudah berakhir<br><br>
+            <strong>Solusi:</strong><br>
+            • Gunakan browser yang sama dengan photo booth<br>
+            • Minta link baru dari photo booth
+        `);
         return;
     }
     
+    console.log("📊 Data ditemukan:", downloadData);
+    
+    // Tampilkan data
     displayDownloadData(downloadData, userName);
 });
 
@@ -205,6 +226,7 @@ function showError(message) {
     `;
 
 }
+
 
 
 
