@@ -3,37 +3,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const downloadId = urlParams.get('download');
     const userName = urlParams.get('name') || 'Pengunjung';
-    const encodedData = urlParams.get('data');
     
-    console.log("Download ID:", downloadId);
-    console.log("User Name:", userName);
-    console.log("Has Data:", !!encodedData);
-    
-    if (!downloadId || !encodedData) {
-        showError("Link download tidak lengkap!");
+    if (!downloadId) {
+        showError("Link download tidak valid!");
         return;
     }
     
-    try {
-        // 🔥 DECODE DATA DARI URL
-        const filesData = JSON.parse(decodeURIComponent(encodedData));
-        
-        const downloadData = {
-            id: downloadId,
-            name: userName,
-            files: filesData,
-            createdAt: new Date().toISOString(),
-            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-        };
-        
-        displayDownloadData(downloadData, userName);
-        
-    } catch (error) {
-        console.error("Error parsing data:", error);
-        showError("Format data tidak valid!");
+    // 🔥 AMBIL DARI sessionStorage (bukan localStorage)
+    const downloadData = JSON.parse(sessionStorage.getItem(`download_data_${downloadId}`) || '{}');
+    
+    if (!downloadData.id) {
+        showError("Data download tidak ditemukan atau sudah expired!");
+        return;
     }
+    
+    // Cek expired
+    const expiryDate = new Date(downloadData.expiresAt);
+    const now = new Date();
+    
+    if (now > expiryDate) {
+        document.getElementById('expiredMessage').style.display = 'block';
+        document.getElementById('content').style.display = 'none';
+        document.getElementById('loading').style.display = 'none';
+        return;
+    }
+    
+    // Tampilkan data
+    displayDownloadData(downloadData, userName);
 });
-
 function displayDownloadData(data, userName) {
     // Update UI
     document.getElementById('userName').textContent = userName;
@@ -159,4 +156,5 @@ function showError(message) {
     `;
 
 }
+
 
