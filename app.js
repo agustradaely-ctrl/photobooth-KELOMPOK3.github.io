@@ -320,66 +320,6 @@ let editingIndex = -1;
 let originalData = null;
 window.galleryImages = galleryImages;
 
-// 🔥 FUNGSI HANDLE REDIRECT - VERSI DEBUG
-function handleDownloadRedirect() {
-    console.log("🔄 Checking for redirect...");
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const redirectId = urlParams.get('redirect_to_download');
-    const userName = urlParams.get('name');
-    
-    console.log("URL Parameters:", {
-        redirectId: redirectId,
-        userName: userName,
-        fullURL: window.location.href
-    });
-    
-    if (redirectId && userName) {
-        console.log("✅ Redirect parameter ditemukan!");
-        
-        // Cek sessionStorage
-        const storageKey = `download_data_${redirectId}`;
-        const storedData = sessionStorage.getItem(storageKey);
-        
-        console.log("SessionStorage key:", storageKey);
-        console.log("SessionStorage data:", storedData ? "ADA" : "TIDAK ADA");
-        
-        if (storedData) {
-            try {
-                const downloadData = JSON.parse(storedData);
-                console.log("Parsed data:", downloadData);
-                
-                if (downloadData.id && downloadData.files && downloadData.files.length > 0) {
-                    console.log(`✅ Data valid: ${downloadData.files.length} file`);
-                    
-                    // 🔥 LANGSUNG REDIRECT TANPA DELAY
-                    window.location.replace(`visitor-download.html?download=${redirectId}&name=${encodeURIComponent(userName)}`);
-                    
-                    // Hentikan eksekusi kode lain
-                    throw new Error("Redirecting..."); // Force stop
-                } else {
-                    console.error("❌ Data tidak lengkap");
-                }
-            } catch (error) {
-                console.error("❌ Error parsing data:", error);
-            }
-        } else {
-            console.error("❌ Tidak ada data di sessionStorage");
-            // 🔥 FALLBACK: Coba localStorage juga
-            const localData = localStorage.getItem(`download_${redirectId}`);
-            if (localData) {
-                console.log("Fallback: Data ditemukan di localStorage");
-                sessionStorage.setItem(storageKey, localData);
-                window.location.replace(`visitor-download.html?download=${redirectId}&name=${encodeURIComponent(userName)}`);
-            }
-        }
-    } else {
-        console.log("ℹ Tidak ada redirect parameter");
-    }
-    
-    return false; // Lanjut ke photo booth
-}
-
 // 🎯 FUNGSI KOMPRESI GAMBAR UNTUK UKURAN LEBIH KECIL
 function compressImage(dataUrl, quality = 0.6) {
     return new Promise((resolve) => {
@@ -2719,11 +2659,6 @@ function hubungiKami() {
 
 // ===== EVENT LISTENERS TERPUSAT =====
 document.addEventListener('DOMContentLoaded', function() {
-      if (handleDownloadRedirect()) {
-        console.log("Redirect berhasil, berhenti di sini");
-        return; // Hentikan eksekusi
-    }
-    
     console.log("🚀 Aplikasi Photo Booth dimuat");
      
     // Inisialisasi sidebar
@@ -4274,6 +4209,7 @@ function base64ToBlob(base64, mimeType) {
     
     return new Blob(byteArrays, { type: mimeType });
 }
+
 
 
 
