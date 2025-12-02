@@ -1,63 +1,27 @@
 // download.js - Khusus untuk halaman download pengunjung
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("📥 Halaman download dimuat");
+    console.log("=== DOWNLOAD PAGE ===");
     
     const urlParams = new URLSearchParams(window.location.search);
     const downloadId = urlParams.get('download');
     const userName = urlParams.get('name') || 'Pengunjung';
     
-    console.log("Parameter URL:", { downloadId, userName });
+    console.log("URL Params:", { downloadId, userName });
     
     if (!downloadId) {
-        showError("Link download tidak valid!");
+        showError("❌ ERROR: Tidak ada parameter 'download' di URL");
         return;
     }
     
-    // 🔥 CARI DATA DARI BERBAGAI SUMBER (prioritas)
-    let downloadData = null;
+    // 🔥 LANGSUNG AMBIL DARI localStorage (tanpa fungsi loadDownloadData)
+    const downloadData = JSON.parse(localStorage.getItem(`download_${downloadId}`) || '{}');
     
-    // 1. Coba dari sessionStorage dulu
-    const sessionData = sessionStorage.getItem(`download_data_${downloadId}`);
-    if (sessionData) {
-        console.log("✅ Data ditemukan di sessionStorage");
-        downloadData = JSON.parse(sessionData);
-    }
-    
-    // 2. Jika tidak ada, coba dari localStorage
-    if (!downloadData || !downloadData.id) {
-        const localData = localStorage.getItem(`download_${downloadId}`);
-        if (localData) {
-            console.log("✅ Data ditemukan di localStorage");
-            downloadData = JSON.parse(localData);
-        }
-    }
-    
-    // 3. Jika masih tidak ada, coba dari URL parameters (fallback)
-    if (!downloadData || !downloadData.id) {
-        console.warn("⚠ Data tidak ditemukan di storage, mungkin cache masalah");
-        showError("Data tidak ditemukan. Coba buka link ini di browser yang sama dengan photo booth.");
+    if (!downloadData.id) {
+        showError("Data tidak ditemukan!");
         return;
     }
     
-    // 🔥 VERIFIKASI DATA
-    if (!downloadData.files || downloadData.files.length === 0) {
-        showError("Tidak ada file yang bisa didownload!");
-        return;
-    }
-    
-    // Cek expired
-    const expiryDate = new Date(downloadData.expiresAt);
-    if (new Date() > expiryDate) {
-        document.getElementById('expiredMessage').style.display = 'block';
-        document.getElementById('content').style.display = 'none';
-        document.getElementById('loading').style.display = 'none';
-        return;
-    }
-    
-    // 🔥 SIMPAN ULANG KE sessionStorage untuk future use
-    sessionStorage.setItem(`download_data_${downloadId}`, JSON.stringify(downloadData));
-    
-    // Tampilkan data
+    // 🔥 PANGGIL displayDownloadData LANGSUNG
     displayDownloadData(downloadData, userName);
 });
 
@@ -186,6 +150,7 @@ function showError(message) {
     `;
 
 }
+
 
 
 
