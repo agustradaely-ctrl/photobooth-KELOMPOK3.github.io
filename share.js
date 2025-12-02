@@ -264,10 +264,10 @@ async function sendToWhatsApp() {
     }, 2000);
 }
 
-// 🔥 FUNGSI BUAT DOWNLOAD LINK - Arahkan ke download.html
 async function createDownloadLink(visitorName) {
     const downloadId = 'dl_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     
+    // 🔥 SIMPAN DATA DI SESSION (bukan localStorage)
     const downloadData = {
         id: downloadId,
         name: visitorName,
@@ -276,25 +276,30 @@ async function createDownloadLink(visitorName) {
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     };
     
-    // Simpan file data
+    // Simpan file data (HANYA metadata, BUKAN file besar)
     for (const fileIndex of selectedFiles) {
         const item = galleryImages[fileIndex];
         downloadData.files.push({
             type: item.type,
-            data: item.data,
+            // 🔥 JANGAN simpan data lengkap, simpan di sessionStorage
+            data: item.data, // Masih simpan sementara
             timestamp: item.timestamp
         });
     }
     
-    // Simpan ke localStorage
-    localStorage.setItem(`download_${downloadId}`, JSON.stringify(downloadData));
+    // 🔥 SIMPAN KE sessionStorage (hanya untuk transfer)
+    sessionStorage.setItem(`temp_download_${downloadId}`, JSON.stringify(downloadData));
     
-    // 🔥 BUAT LINK KE DOWNLOAD.HTML (halaman khusus pengunjung)
-    // GANTI baris terakhir dengan:
-    const currentUrl = window.location.href;
-    const baseUrl = currentUrl.split('/').slice(0, -1).join('/'); // Hapus index.html
-    const downloadUrl = `${baseUrl}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
-
+    // 🔥 BUAT URL DENGAN DATA DI URL (encode di URL)
+    const filesData = encodeURIComponent(JSON.stringify(downloadData.files.map(f => ({
+        type: f.type,
+        // Simpan data langsung di URL (base64 untuk foto)
+        data: f.type === 'photo' ? f.data : '', // Untuk video, kosongkan dulu
+        timestamp: f.timestamp
+    }))));
+    
+    const downloadUrl = `${window.location.origin}${window.location.pathname.replace('index.html', '')}visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}&data=${filesData}`;
+    
     return downloadUrl;
 }
 
@@ -365,6 +370,7 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
 
 
