@@ -1,36 +1,66 @@
 // download.js - Khusus untuk halaman download pengunjung
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("📥 Halaman download dimuat");
+    
     const urlParams = new URLSearchParams(window.location.search);
     const downloadId = urlParams.get('download');
     const userName = urlParams.get('name') || 'Pengunjung';
+    
+    console.log("Parameter URL:", { downloadId, userName });
     
     if (!downloadId) {
         showError("Link download tidak valid!");
         return;
     }
     
-    // 🔥 AMBIL DARI sessionStorage (bukan localStorage)
-    const downloadData = JSON.parse(sessionStorage.getItem(`download_data_${downloadId}`) || '{}');
+    // 🔥 CARI DATA DARI BERBAGAI SUMBER (prioritas)
+    let downloadData = null;
     
-    if (!downloadData.id) {
-        showError("Data download tidak ditemukan atau sudah expired!");
+    // 1. Coba dari sessionStorage dulu
+    const sessionData = sessionStorage.getItem(`download_data_${downloadId}`);
+    if (sessionData) {
+        console.log("✅ Data ditemukan di sessionStorage");
+        downloadData = JSON.parse(sessionData);
+    }
+    
+    // 2. Jika tidak ada, coba dari localStorage
+    if (!downloadData || !downloadData.id) {
+        const localData = localStorage.getItem(`download_${downloadId}`);
+        if (localData) {
+            console.log("✅ Data ditemukan di localStorage");
+            downloadData = JSON.parse(localData);
+        }
+    }
+    
+    // 3. Jika masih tidak ada, coba dari URL parameters (fallback)
+    if (!downloadData || !downloadData.id) {
+        console.warn("⚠ Data tidak ditemukan di storage, mungkin cache masalah");
+        showError("Data tidak ditemukan. Coba buka link ini di browser yang sama dengan photo booth.");
+        return;
+    }
+    
+    // 🔥 VERIFIKASI DATA
+    if (!downloadData.files || downloadData.files.length === 0) {
+        showError("Tidak ada file yang bisa didownload!");
         return;
     }
     
     // Cek expired
     const expiryDate = new Date(downloadData.expiresAt);
-    const now = new Date();
-    
-    if (now > expiryDate) {
+    if (new Date() > expiryDate) {
         document.getElementById('expiredMessage').style.display = 'block';
         document.getElementById('content').style.display = 'none';
         document.getElementById('loading').style.display = 'none';
         return;
     }
     
+    // 🔥 SIMPAN ULANG KE sessionStorage untuk future use
+    sessionStorage.setItem(`download_data_${downloadId}`, JSON.stringify(downloadData));
+    
     // Tampilkan data
     displayDownloadData(downloadData, userName);
 });
+
 function displayDownloadData(data, userName) {
     // Update UI
     document.getElementById('userName').textContent = userName;
@@ -156,5 +186,6 @@ function showError(message) {
     `;
 
 }
+
 
 
