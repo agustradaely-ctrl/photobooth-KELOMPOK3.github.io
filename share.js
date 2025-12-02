@@ -289,11 +289,13 @@ async function createDownloadLink(visitorName) {
     // SIMPAN KE localStorage
     localStorage.setItem(`download_${downloadId}`, JSON.stringify(downloadData));
     
-    // 🔥 URL LANGSUNG KE visitor-download.html
-    const downloadUrl = `visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
-    
+    const baseUrl = window.location.origin + window.location.pathname;
+    const folderPath = baseUrl.substring(0, baseUrl.lastIndexOf('/'));
+    const downloadUrl = `${folderPath}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
+
+    console.log("🔗 Generated URL:", downloadUrl);
     return downloadUrl;
-}
+    }
 // 🔥 FUNGSI TUTUP MODAL
 function closeModal() {
     document.getElementById('multiShareModal').style.display = 'none';
@@ -361,6 +363,7 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
 
 
