@@ -290,9 +290,7 @@ async function createDownloadLink(visitorName) {
     localStorage.setItem(`download_${downloadId}`, JSON.stringify(downloadData));
     
     // 🔥 BUAT LINK KE DOWNLOAD.HTML (halaman khusus pengunjung)
-// Di fungsi createDownloadLink():
-const downloadUrl = `./visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
-//                      
+    const downloadUrl = `${window.location.origin}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
     return downloadUrl;
 }
 
@@ -363,4 +361,5 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
