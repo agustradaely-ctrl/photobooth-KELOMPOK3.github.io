@@ -289,10 +289,11 @@ async function createDownloadLink(visitorName) {
     // 🔥 SIMPAN KE sessionStorage (bisa diakses antar halaman dalam sesi yang sama)
     sessionStorage.setItem(`download_data_${downloadId}`, JSON.stringify(downloadData));
     
-    // 🔥 BUAT URL KE index.html DULU (bukan langsung ke visitor-download.html)
-    const downloadUrl = `${window.location.origin}${window.location.pathname}?redirect_to_download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
-    
-    console.log("🔗 Download URL dibuat:", downloadUrl);
+// ATAU lebih sederhana:
+const currentPage = window.location.origin + window.location.pathname;
+const downloadUrl = `${currentPage}?redirect_to_download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
+
+console.log("🔗 Generated URL:", downloadUrl);
     return downloadUrl;
 }
 
@@ -363,6 +364,7 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
 
 
