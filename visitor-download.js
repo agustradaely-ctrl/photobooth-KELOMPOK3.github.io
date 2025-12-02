@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // 🔥 LANGSUNG AMBIL DARI localStorage (tanpa fungsi loadDownloadData)
+    // CARI DATA
     const downloadData = JSON.parse(localStorage.getItem(`download_${downloadId}`) || '{}');
     
     if (!downloadData.id) {
@@ -21,17 +21,41 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // 🔥 PANGGIL displayDownloadData LANGSUNG
+    // PANGGIL FUNGSI displayDownloadData
     displayDownloadData(downloadData, userName);
 });
 
+// 🔥 FUNGSI INI HARUS ADA
 function displayDownloadData(data, userName) {
+    console.log("Displaying data for:", userName);
+    
     // Update UI
     document.getElementById('userName').textContent = userName;
     document.getElementById('totalFiles').textContent = data.files.length;
     
+    // Hitung foto dan video
+    const photoCount = data.files.filter(f => f.type === 'photo').length;
+    const videoCount = data.files.filter(f => f.type === 'video').length;
+    
+    // Jika ada elemen untuk menampilkan count
+    if (document.getElementById('photoCount')) {
+        document.getElementById('photoCount').textContent = photoCount;
+    }
+    if (document.getElementById('videoCount')) {
+        document.getElementById('videoCount').textContent = videoCount;
+    }
+    
+    // Tampilkan expiry time
     const expiryDate = new Date(data.expiresAt);
     document.getElementById('expiryTime').textContent = expiryDate.toLocaleString('id-ID');
+    
+    // Cek expired
+    if (new Date() > expiryDate) {
+        document.getElementById('expiredMessage').style.display = 'block';
+        document.getElementById('content').style.display = 'none';
+        document.getElementById('loading').style.display = 'none';
+        return;
+    }
     
     // Setup download button
     document.getElementById('downloadBtn').addEventListener('click', function() {
@@ -150,6 +174,7 @@ function showError(message) {
     `;
 
 }
+
 
 
 
