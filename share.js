@@ -290,8 +290,11 @@ async function createDownloadLink(visitorName) {
     localStorage.setItem(`download_${downloadId}`, JSON.stringify(downloadData));
     
     // 🔥 BUAT LINK KE DOWNLOAD.HTML (halaman khusus pengunjung)
-    const repoName = window.location.pathname.split('/')[1]; // Ambil nama repo dari URL
-    const downloadUrl = `/${repoName}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
+    // GANTI baris terakhir dengan:
+    const currentUrl = window.location.href;
+    const baseUrl = currentUrl.split('/').slice(0, -1).join('/'); // Hapus index.html
+    const downloadUrl = `${baseUrl}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
+
     return downloadUrl;
 }
 
@@ -362,6 +365,7 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
 
 
