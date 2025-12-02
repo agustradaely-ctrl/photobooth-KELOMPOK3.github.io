@@ -79,44 +79,127 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 🔥 FUNGSI INI HARUS ADA
 function displayDownloadData(data, userName) {
-    console.log("Displaying data for:", userName);
+    console.log("🖼 Menampilkan data untuk:", userName);
     
-    // Update UI
+    // 1. Update informasi dasar
     document.getElementById('userName').textContent = userName;
     document.getElementById('totalFiles').textContent = data.files.length;
     
-    // Hitung foto dan video
+    // 2. Hitung jumlah foto dan video
     const photoCount = data.files.filter(f => f.type === 'photo').length;
     const videoCount = data.files.filter(f => f.type === 'video').length;
     
-    // Jika ada elemen untuk menampilkan count
-    if (document.getElementById('photoCount')) {
-        document.getElementById('photoCount').textContent = photoCount;
-    }
-    if (document.getElementById('videoCount')) {
-        document.getElementById('videoCount').textContent = videoCount;
+    // 3. Tampilkan count jika ada elemennya
+    const photoCountElement = document.getElementById('photoCount');
+    const videoCountElement = document.getElementById('videoCount');
+    
+    if (photoCountElement) {
+        photoCountElement.textContent = photoCount;
     }
     
-    // Tampilkan expiry time
+    if (videoCountElement) {
+        videoCountElement.textContent = videoCount;
+    }
+    
+    // 4. Tampilkan expiry time
     const expiryDate = new Date(data.expiresAt);
     document.getElementById('expiryTime').textContent = expiryDate.toLocaleString('id-ID');
     
-    // Cek expired
+    // 5. Cek expired
     if (new Date() > expiryDate) {
-        document.getElementById('expiredMessage').style.display = 'block';
-        document.getElementById('content').style.display = 'none';
-        document.getElementById('loading').style.display = 'none';
+        if (document.getElementById('expiredMessage')) {
+            document.getElementById('expiredMessage').style.display = 'block';
+        }
+        if (document.getElementById('content')) {
+            document.getElementById('content').style.display = 'none';
+        }
+        if (document.getElementById('loading')) {
+            document.getElementById('loading').style.display = 'none';
+        }
         return;
     }
     
-    // Setup download button
-    document.getElementById('downloadBtn').addEventListener('click', function() {
-        downloadAllFiles(data, userName);
-    });
+    // 6. 🔥 TAMPILKAN PREVIEW FILE (jika ada elemen untuk preview)
+    const fileListContainer = document.getElementById('fileList');
+    if (fileListContainer) {
+        fileListContainer.innerHTML = '';
+        
+        data.files.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.style.cssText = `
+                margin: 10px 0;
+                padding: 10px;
+                background: #f5f5f5;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+            `;
+            
+            if (file.type === 'photo') {
+                fileItem.innerHTML = `
+                    <div style="width: 50px; height: 50px; margin-right: 15px;">
+                        <img src="${file.data}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <strong>Foto ${index + 1}</strong><br>
+                        <small>${new Date(file.timestamp).toLocaleTimeString()}</small>
+                    </div>
+                    <button onclick="previewFile(${index})" style="background: #2196F3; color: white; border: none; padding: 8px 12px; border-radius: 5px; margin-right: 5px;">
+                        👁 Lihat
+                    </button>
+                `;
+            } else {
+                fileItem.innerHTML = `
+                    <div style="width: 50px; height: 50px; margin-right: 15px; background: #333; border-radius: 5px; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: white; font-size: 24px;">🎥</span>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <strong>Video ${index + 1}</strong><br>
+                        <small>${new Date(file.timestamp).toLocaleTimeString()}</small>
+                    </div>
+                    <button onclick="previewFile(${index})" style="background: #2196F3; color: white; border: none; padding: 8px 12px; border-radius: 5px; margin-right: 5px;">
+                        ▶ Putar
+                    </button>
+                `;
+            }
+            
+            fileListContainer.appendChild(fileItem);
+        });
+    }
     
-    // Show content
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
+    // 7. 🔥 SETUP DOWNLOAD BUTTON
+    const downloadBtn = document.getElementById('downloadBtn');
+    if (downloadBtn) {
+        // Hapus event listener lama
+        const newDownloadBtn = downloadBtn.cloneNode(true);
+        downloadBtn.parentNode.replaceChild(newDownloadBtn, downloadBtn);
+        
+        // Tambah event listener baru
+        newDownloadBtn.addEventListener('click', function() {
+            console.log("Download button clicked");
+            downloadAllFiles(data, userName);
+        });
+        
+        // Update teks button
+        newDownloadBtn.innerHTML = `<i class="fas fa-download"></i> DOWNLOAD ${data.files.length} FILE (ZIP)`;
+    }
+    
+    // 8. Tampilkan konten
+    const loadingElement = document.getElementById('loading');
+    const contentElement = document.getElementById('content');
+    
+    if (loadingElement) loadingElement.style.display = 'none';
+    if (contentElement) contentElement.style.display = 'block';
+    
+    console.log("✅ Display selesai");
+}
+
+// 🔥 TAMBAH FUNGSI PREVIEW
+function previewFile(index) {
+    // Data harus tersedia di scope global atau di-pass
+    console.log("Preview file index:", index);
+    alert(`Preview file ${index + 1}\n\nFitur preview akan tampil di sini.)`;
 }
 
 async function downloadAllFiles(data, userName) {
@@ -226,6 +309,7 @@ function showError(message) {
     `;
 
 }
+
 
 
 
