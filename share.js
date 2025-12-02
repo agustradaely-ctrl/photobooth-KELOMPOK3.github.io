@@ -286,14 +286,14 @@ async function createDownloadLink(visitorName) {
         });
     }
     
-    // 🔥 SIMPAN KE sessionStorage (bisa diakses antar halaman dalam sesi yang sama)
+    // 🔥 SIMPAN KE localStorage DAN sessionStorage
+    localStorage.setItem(`download_${downloadId}`, JSON.stringify(downloadData));
     sessionStorage.setItem(`download_data_${downloadId}`, JSON.stringify(downloadData));
     
-// ATAU lebih sederhana:
-const currentPage = window.location.origin + window.location.pathname;
-const downloadUrl = `${currentPage}?redirect_to_download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
-
-console.log("🔗 Generated URL:", downloadUrl);
+    // 🔥 BUAT URL LANGSUNG KE visitor-download.html
+    const downloadUrl = `visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
+    
+    console.log("🔗 Link download dibuat:", downloadUrl);
     return downloadUrl;
 }
 
@@ -364,6 +364,7 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
 
 
