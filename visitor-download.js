@@ -6,22 +6,53 @@ document.addEventListener('DOMContentLoaded', function() {
     const downloadId = urlParams.get('download');
     const userName = urlParams.get('name') || 'Pengunjung';
     
-    console.log("URL Params:", { downloadId, userName });
+    console.log("Params:", { downloadId, userName });
     
     if (!downloadId) {
-        showError("❌ ERROR: Tidak ada parameter 'download' di URL");
+        showError("Link tidak valid!");
         return;
     }
     
-    // CARI DATA
-    const downloadData = JSON.parse(localStorage.getItem(`download_${downloadId}`) || '{}');
+    // 🔥 1. AMBIL METADATA DARI localStorage
+    const metaData = JSON.parse(localStorage.getItem(`meta_${downloadId}`) || '{}');
     
-    if (!downloadData.id) {
-        showError("Data tidak ditemukan!");
+    if (!metaData.id) {
+        showError("Metadata tidak ditemukan!");
         return;
     }
     
-    // PANGGIL FUNGSI displayDownloadData
+    // 🔥 2. BANGUN ULANG DATA DARI sessionStorage
+    const downloadData = {
+        id: metaData.id,
+        name: metaData.name,
+        files: [],
+        createdAt: metaData.createdAt,
+        expiresAt: metaData.expiresAt
+    };
+    
+    // 🔥 3. AMBIL SETIAP FILE DARI sessionStorage
+    for (let i = 0; i < metaData.fileCount; i++) {
+        const fileKey = `file_${downloadId}_${i}`;
+        const fileData = sessionStorage.getItem(fileKey);
+        
+        if (fileData) {
+            // Tentukan type dari data (photo atau video)
+            const type = fileData.startsWith('data:image') ? 'photo' : 'video';
+            downloadData.files.push({
+                type: type,
+                data: fileData,
+                timestamp: Date.now()
+            });
+        }
+    }
+    
+    console.log("Data dibangun ulang:", downloadData);
+    
+    if (downloadData.files.length === 0) {
+        showError("File tidak ditemukan di session!");
+        return;
+    }
+    
     displayDownloadData(downloadData, userName);
 });
 
@@ -174,6 +205,7 @@ function showError(message) {
     `;
 
 }
+
 
 
 
