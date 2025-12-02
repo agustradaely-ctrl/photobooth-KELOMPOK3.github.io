@@ -290,7 +290,8 @@ async function createDownloadLink(visitorName) {
     localStorage.setItem(`download_${downloadId}`, JSON.stringify(downloadData));
     
     // 🔥 BUAT LINK KE DOWNLOAD.HTML (halaman khusus pengunjung)
-    const downloadUrl = `${window.location.origin}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
+    const repoName = window.location.pathname.split('/')[1]; // Ambil nama repo dari URL
+    const downloadUrl = `/${repoName}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
     return downloadUrl;
 }
 
@@ -361,5 +362,6 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
 
