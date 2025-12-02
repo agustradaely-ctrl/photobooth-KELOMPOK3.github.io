@@ -319,6 +319,27 @@ let editingItem = null;
 let editingIndex = -1;
 let originalData = null;
 window.galleryImages = galleryImages;
+
+function handleDownloadRedirect() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectId = urlParams.get('redirect_to_download');
+    const userName = urlParams.get('name');
+    
+    if (redirectId && userName) {
+        console.log("🔄 Redirect ke halaman download...");
+        
+        // Ambil data dari sessionStorage
+        const downloadData = JSON.parse(sessionStorage.getItem(`download_data_${redirectId}`) || '{}');
+        
+        if (downloadData.id) {
+            // Redirect ke visitor-download.html
+            setTimeout(() => {
+                window.location.href = `visitor-download.html?download=${redirectId}&name=${encodeURIComponent(userName)}`;
+            }, 100);
+        }
+    }
+}
+
 // 🎯 FUNGSI KOMPRESI GAMBAR UNTUK UKURAN LEBIH KECIL
 function compressImage(dataUrl, quality = 0.6) {
     return new Promise((resolve) => {
@@ -2659,7 +2680,7 @@ function hubungiKami() {
 // ===== EVENT LISTENERS TERPUSAT =====
 document.addEventListener('DOMContentLoaded', function() {
     console.log("🚀 Aplikasi Photo Booth dimuat");
-    
+     handleDownloadRedirect();
     // Inisialisasi sidebar
     initSidebar();
     
@@ -4208,4 +4229,5 @@ function base64ToBlob(base64, mimeType) {
     
     return new Blob(byteArrays, { type: mimeType });
 }
+
 
