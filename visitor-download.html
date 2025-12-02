@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📥 Download Hasil PhotoBooth - Pengunjung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #128C7E, #075E54);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .download-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            margin-bottom: 25px;
+        }
+        
+        .logo {
+            font-size: 60px;
+            color: #25D366;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            color: #075E54;
+            margin-bottom: 10px;
+        }
+        
+        .user-info {
+            background: #f0f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+            border-left: 5px solid #25D366;
+        }
+        
+        .info-item {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-item i {
+            color: #25D366;
+            margin-right: 10px;
+            width: 20px;
+        }
+        
+        .download-btn {
+            background: linear-gradient(to right, #25D366, #128C7E);
+            color: white;
+            border: none;
+            padding: 18px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 25px 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+            text-align: left;
+        }
+        
+        .expired {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #25D366;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="download-container">
+        <div class="header">
+            <div class="logo">📸</div>
+            <h1>Download Hasil PhotoBooth - Pengunjung</h1>
+            <p>Link khusus untuk pengunjung</p>
+        </div>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Memuat data download...</p>
+        </div>
+        
+        <div id="content" style="display: none;">
+            <!-- Info pengunjung -->
+            <div class="user-info">
+                <div class="info-item">
+                    <i>👤</i>
+                    <span>Nama: <strong id="userName">-</strong></span>
+                </div>
+                <div class="info-item">
+                    <i>📁</i>
+                    <span>Total File: <strong id="totalFiles">0</strong> file</span>
+                </div>
+                <div class="info-item">
+                    <i>⏰</i>
+                    <span>Link berlaku hingga: <strong id="expiryTime">-</strong></span>
+                </div>
+            </div>
+            
+            <!-- Download button -->
+            <button id="downloadBtn" class="download-btn">
+                <i>📥</i> DOWNLOAD SEMUA FILE (ZIP)
+            </button>
+            
+            <!-- Warning -->
+            <div class="warning">
+                <i>⚠</i>
+                <strong>Perhatian:</strong> Link ini hanya berlaku 24 jam. Download file sebelum waktu habis.
+            </div>
+            
+            <!-- Expired message -->
+            <div id="expiredMessage" class="expired" style="display: none;">
+                <h3>⛔ Link Kadaluarsa</h3>
+                <p>Maaf, link download ini sudah kadaluarsa.</p>
+                <p>Silakan minta link baru.</p>
+            </div>
+            
+            <div class="footer">
+                <p>📸 Photo Booth System</p>
+                <p>© 2024 - Link aman dan pribadi</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="visitor-download.js"></script>
+</body>
+</html>
