@@ -286,17 +286,14 @@ async function createDownloadLink(visitorName) {
         });
     }
     
-    // 🔥 SIMPAN KE localStorage DAN sessionStorage
+    // SIMPAN KE localStorage
     localStorage.setItem(`download_${downloadId}`, JSON.stringify(downloadData));
-    sessionStorage.setItem(`download_data_${downloadId}`, JSON.stringify(downloadData));
     
-    // 🔥 BUAT URL LANGSUNG KE visitor-download.html
+    // 🔥 URL LANGSUNG KE visitor-download.html
     const downloadUrl = `visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
     
-    console.log("🔗 Link download dibuat:", downloadUrl);
     return downloadUrl;
 }
-
 // 🔥 FUNGSI TUTUP MODAL
 function closeModal() {
     document.getElementById('multiShareModal').style.display = 'none';
@@ -364,6 +361,7 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
 
 
