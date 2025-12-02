@@ -2895,21 +2895,73 @@ document.addEventListener('DOMContentLoaded', function() {
         updateEditButtonVisibility();
         console.log("✅ Tombol Edit diinisialisasi");
     }, 1000);
-
-    const shareBtn = document.getElementById('shareBtn');
-    console.log("🔍 Tombol Share element:", shareBtn);
     
-    if (shareBtn) {
-        shareBtn.addEventListener('click', function() {
-            console.log("🎯 Tombol Share diklik!");
-            openMultiShareModal();
-        });
-        console.log("✅ Tombol Share listener terpasang");
-    } else {
-        console.error("❌ Tombol Share tidak ditemukan!");
-    }
-    handleDownloadFromLink();
+    const shareBtn = document.getElementById('shareBtn');
+console.log("🔍 Tombol Share element:", shareBtn);
+
+if (shareBtn) {
+    shareBtn.addEventListener('click', function() {
+        console.log("🎯 Tombol Share diklik!");
+        
+        // Gunakan fungsi dari share.js jika ada, atau tampilkan modal langsung
+        if (typeof openShareModal === 'function') {
+            openShareModal();
+        } else {
+            // Fallback: tampilkan modal langsung
+            const modal = document.getElementById('multiShareModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+    });
+    console.log("✅ Tombol Share listener terpasang");
+} else {
+    console.error("❌ Tombol Share tidak ditemukan!");
+}
 });
+
+// 🔥 UPDATE fungsi initializeShareModal di app.js
+function initializeShareModal() {
+    console.log("🔄 Menginisialisasi modal share...");
+    
+    // Pastikan galleryImages ada
+    if (typeof galleryImages === 'undefined' || galleryImages.length === 0) {
+        console.log("⚠ Gallery kosong");
+        Swal.fire({
+            title: '📭 Gallery Kosong',
+            text: 'Belum ada foto atau video yang bisa dibagikan!',
+            icon: 'warning',
+            confirmButtonText: 'Mengerti'
+        });
+        return;
+    }
+    
+    // Update counters
+    document.getElementById('totalCount').textContent = galleryImages.length;
+    document.getElementById('selectedCount').textContent = '0';
+    
+    // Reset form dengan nilai default
+    document.getElementById('visitorName').value = '';
+    document.getElementById('multiWhatsappNumber').value = '';
+    document.getElementById('multiWhatsappMessage').value = `Hai! Ini hasil foto/video saya dari Photo Booth 🎉
+
+Nama: #NAMA#
+Total: #COUNT# file (#PHOTOS# foto + #VIDEOS# video)
+
+Klik link di bawah untuk download:
+#LINK#
+
+Link berlaku 24 jam. Terima kasih! 📸`;
+    
+    // 🔥 PANGGIL FUNGSI UNTUK ISI FILE GRID
+    if (typeof populateShareFileGrid === 'function') {
+        populateShareFileGrid();
+    } else {
+        console.error("❌ Fungsi populateShareFileGrid tidak ditemukan!");
+    }
+}
+
+
 
 // ===== ✅ SISTEM LOGIN DENGAN POPUP YANG SUDAH ADA =====
 
@@ -4156,3 +4208,4 @@ function base64ToBlob(base64, mimeType) {
     
     return new Blob(byteArrays, { type: mimeType });
 }
+
