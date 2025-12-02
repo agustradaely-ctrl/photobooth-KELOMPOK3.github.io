@@ -1,18 +1,23 @@
 // download.js - Khusus untuk halaman download pengunjung
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("📥 Halaman download pengunjung loaded");
+    console.log("📥 Halaman download loaded");
     
-    // Ambil parameter dari URL
+    // Debug: tampilkan semua parameter URL
     const urlParams = new URLSearchParams(window.location.search);
+    console.log("URL Parameters:", Object.fromEntries(urlParams));
+    
     const downloadId = urlParams.get('download');
     const userName = urlParams.get('name') || 'Pengunjung';
     
+    console.log("Download ID:", downloadId);
+    console.log("User Name:", userName);
+    
     if (!downloadId) {
-        showError("Link download tidak valid!");
+        console.error("❌ Tidak ada parameter download di URL");
+        showError("Link download tidak valid! Parameter 'download' tidak ditemukan.");
         return;
     }
     
-    // Load data dari localStorage
     loadDownloadData(downloadId, userName);
 });
 
@@ -174,4 +179,5 @@ function showError(message) {
             <p>${message}</p>
         </div>
     `;
+
 }
