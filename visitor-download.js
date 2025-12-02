@@ -1,75 +1,53 @@
 // download.js - Khusus untuk halaman download pengunjung
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("📥 Halaman download loaded");
-    
-    // Debug: tampilkan semua parameter URL
     const urlParams = new URLSearchParams(window.location.search);
-    console.log("URL Parameters:", Object.fromEntries(urlParams));
-    
     const downloadId = urlParams.get('download');
     const userName = urlParams.get('name') || 'Pengunjung';
+    const encodedData = urlParams.get('data');
     
     console.log("Download ID:", downloadId);
     console.log("User Name:", userName);
+    console.log("Has Data:", !!encodedData);
     
-    if (!downloadId) {
-        console.error("❌ Tidak ada parameter download di URL");
-        showError("Link download tidak valid! Parameter 'download' tidak ditemukan.");
+    if (!downloadId || !encodedData) {
+        showError("Link download tidak lengkap!");
         return;
     }
     
-    loadDownloadData(downloadId, userName);
+    try {
+        // 🔥 DECODE DATA DARI URL
+        const filesData = JSON.parse(decodeURIComponent(encodedData));
+        
+        const downloadData = {
+            id: downloadId,
+            name: userName,
+            files: filesData,
+            createdAt: new Date().toISOString(),
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        };
+        
+        displayDownloadData(downloadData, userName);
+        
+    } catch (error) {
+        console.error("Error parsing data:", error);
+        showError("Format data tidak valid!");
+    }
 });
 
-function loadDownloadData(downloadId, userName) {
-    console.log("🔍 Loading data untuk:", userName);
-    
-    const downloadData = JSON.parse(localStorage.getItem(`download_${downloadId}`) || '{}');
-    
-    if (!downloadData.id || !downloadData.files || downloadData.files.length === 0) {
-        showError("Data download tidak ditemukan!");
-        return;
-    }
-    
-    // Cek expired
-    const expiryDate = new Date(downloadData.expiresAt);
-    const now = new Date();
-    
-    if (now > expiryDate) {
-        document.getElementById('expiredMessage').style.display = 'block';
-        document.getElementById('content').style.display = 'none';
-        document.getElementById('loading').style.display = 'none';
-        return;
-    }
-    
-    // Tampilkan data
-    displayData(downloadData, userName);
-}
-
-function displayData(data, userName) {
-    // Update info
+function displayDownloadData(data, userName) {
+    // Update UI
     document.getElementById('userName').textContent = userName;
     document.getElementById('totalFiles').textContent = data.files.length;
     
-    // Format waktu
     const expiryDate = new Date(data.expiresAt);
-    const formattedTime = expiryDate.toLocaleString('id-ID', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-    document.getElementById('expiryTime').textContent = formattedTime;
+    document.getElementById('expiryTime').textContent = expiryDate.toLocaleString('id-ID');
     
     // Setup download button
-    const downloadBtn = document.getElementById('downloadBtn');
-    downloadBtn.addEventListener('click', function() {
+    document.getElementById('downloadBtn').addEventListener('click', function() {
         downloadAllFiles(data, userName);
     });
     
-    // Tampilkan konten
+    // Show content
     document.getElementById('loading').style.display = 'none';
     document.getElementById('content').style.display = 'block';
 }
@@ -181,3 +159,4 @@ function showError(message) {
     `;
 
 }
+
