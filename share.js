@@ -275,40 +275,28 @@ async function createDownloadLink(visitorName) {
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     };
     
-    // Simpan HANYA data kecil (metadata), bukan file besar
+    // Simpan file data (seperti semula)
     for (const fileIndex of selectedFiles) {
         const item = galleryImages[fileIndex];
         downloadData.files.push({
             type: item.type,
-            // 🔥 JANGAN simpan data base64 lengkap, simpan di sessionStorage
-            dataKey: `file_${downloadId}_${fileIndex}`, // Key untuk ambil nanti
+            data: item.data, // TETAP simpan data lengkap
             timestamp: item.timestamp
         });
-        
-        // 🔥 SIMPAN DATA FILE KE sessionStorage DENGAN KEY TERPISAH
-        sessionStorage.setItem(`file_${downloadId}_${fileIndex},, item.data);
     }
     
-    // 🔥 SIMPAN METADATA KE localStorage (kecil saja)
-    localStorage.setItem(`meta_${downloadId}`, JSON.stringify({
-        id: downloadId,
-        name: visitorName,
-        fileCount: selectedFiles.length,
-        createdAt: downloadData.createdAt,
-        expiresAt: downloadData.expiresAt
-    }));
+    // Simpan ke localStorage (seperti semula)
+    localStorage.setItem(`download_${downloadId}`, JSON.stringify(downloadData));
     
-    // 🔥 BUAT URL
+    // Buat URL (seperti semula)
     const domain = window.location.origin;
     const path = window.location.pathname;
     const repoPath = path.split('/').slice(0, 2).join('/');
     
     const downloadUrl = `${domain}${repoPath}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
     
-    console.log("✅ Link dibuat dengan metadata");
     return downloadUrl;
 }
-
 // 🔥 FUNGSI TUTUP MODAL
 function closeModal() {
     document.getElementById('multiShareModal').style.display = 'none';
@@ -376,6 +364,7 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
 
 
