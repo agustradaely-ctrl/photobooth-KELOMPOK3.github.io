@@ -263,6 +263,8 @@ async function sendToWhatsApp() {
     }, 2000);
 }
 
+
+// 🔥 FUNGSI BUAT DOWNLOAD LINK - VERSI BARU (sessionStorage + redirect)
 async function createDownloadLink(visitorName) {
     const downloadId = 'dl_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     
@@ -274,47 +276,28 @@ async function createDownloadLink(visitorName) {
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     };
     
-    // Simpan file data
+    // Simpan file data (seperti semula)
     for (const fileIndex of selectedFiles) {
         const item = galleryImages[fileIndex];
         downloadData.files.push({
             type: item.type,
-            data: item.data, // Data base64 lengkap
+            data: item.data, // TETAP simpan data lengkap
             timestamp: item.timestamp
         });
     }
     
-    // 🔥 SIMPAN KE localStorage UNTUK BROWSER SAMA
+    // Simpan ke localStorage (seperti semula)
     localStorage.setItem(`download_${downloadId}`, JSON.stringify(downloadData));
     
-    // 🔥 ENCODE DATA UNTUK URL (untuk browser lain)
-    // Hanya untuk 1-2 file kecil (jika banyak file, data akan terlalu panjang)
-    const encodedData = encodeURIComponent(JSON.stringify({
-        id: downloadId,
-        name: visitorName,
-        fileCount: downloadData.files.length,
-        expiresAt: downloadData.expiresAt
-    }));
-    
-    // 🔥 BUAT URL DENGAN DATA DI PARAMETER
+    // Buat URL (seperti semula)
     const domain = window.location.origin;
     const path = window.location.pathname;
     const repoPath = path.split('/').slice(0, 2).join('/');
     
-    let downloadUrl;
+    const downloadUrl = `${domain}${repoPath}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
     
-    if (selectedFiles.length <= 2) { // Jika file sedikit
-        // URL dengan data lengkap di parameter
-        downloadUrl = `${domain}${repoPath}/visitor-download.html?data=${encodedData}`;
-    } else { // Jika file banyak
-        // URL biasa (hanya ID)
-        downloadUrl = `${domain}${repoPath}/visitor-download.html?download=${downloadId}&name=${encodeURIComponent(visitorName)}`;
-    }
-    
-    console.log("🔗 URL dibuat:", downloadUrl);
     return downloadUrl;
 }
-
 // 🔥 FUNGSI TUTUP MODAL
 function closeModal() {
     document.getElementById('multiShareModal').style.display = 'none';
@@ -382,6 +365,7 @@ function handleDownloadFromLink() {
         }
     }
 }
+
 
 
 
