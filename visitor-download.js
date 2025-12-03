@@ -1,98 +1,141 @@
 // visitor-download.js - VERSI BERSIH
+
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("📥 Download page loaded");
+    console.log("=== DOWNLOAD PAGE DEBUG ===");
     
+    // 1. Tampilkan semua localStorage keys
+    console.log("🔑 Semua localStorage keys:", Object.keys(localStorage));
+    
+    // 2. Ambil parameter URL
     const urlParams = new URLSearchParams(window.location.search);
-    
-    // 🔥 KASUS 1: ADA PARAMETER 'data' (untuk browser lain)
-    const encodedData = urlParams.get('data');
-    
-    if (encodedData) {
-        console.log("✅ Menggunakan data dari URL parameter");
-        try {
-            const urlData = JSON.parse(decodeURIComponent(encodedData));
-            handleUrlData(urlData);
-            return;
-        } catch (error) {
-            console.error("Error parsing URL data:", error);
-        }
-    }
-    
-    // 🔥 KASUS 2: PARAMETER BIASA (untuk browser sama)
     const downloadId = urlParams.get('download');
     const userName = urlParams.get('name') || 'Pengunjung';
     
+    console.log("📋 URL Parameters:", { 
+        downloadId: downloadId,
+        userName: userName,
+        fullURL: window.location.href 
+    });
+    
     if (!downloadId) {
-        showError("Link tidak valid!");
+        console.error("❌ ERROR: Tidak ada downloadId di URL");
+        showError("Link tidak valid! Tidak ada ID download.");
         return;
     }
     
-    console.log("Mencari data di localStorage...");
+    // 3. CARI DATA DENGAN BERBAGAI CARA
+    let downloadData = null;
+    let foundKey = null;
     
-    // Cari di localStorage
-    const downloadData = JSON.parse(localStorage.getItem(`download_${downloadId}`) || '{}');
+    // Cara 1: Coba dengan key "download_"
+    const key1 = `download_${downloadId}`;
+    console.log(`Mencari dengan key: "${key1}"`);
+    const data1 = localStorage.getItem(key1);
     
-    if (!downloadData.id) {
+    if (data1) {
+        console.log(`✅ Ditemukan dengan key: "${key1}"`);
+        foundKey = key1;
+        try {
+            downloadData = JSON.parse(data1);
+        } catch (e) {
+            console.error(`Error parsing "${key1}":`, e);
+        }
+    }
+    
+    // Cara 2: Coba key tanpa prefix (kalau ID sudah lengkap)
+    if (!downloadData && downloadId.startsWith('dl_')) {
+        const key2 = downloadId;
+        console.log(`Mencari dengan key: "${key2}"`);
+        const data2 = localStorage.getItem(key2);
+        
+        if (data2) {
+            console.log(`✅ Ditemukan dengan key: "${key2}"`);
+            foundKey = key2;
+            try {
+                downloadData = JSON.parse(data2);
+            } catch (e) {
+                console.error(`Error parsing "${key2}":`, e);
+            }
+        }
+    }
+    
+    // Cara 3: Cari semua key yang mengandung downloadId
+    if (!downloadData) {
+        console.log("🔍 Mencari semua key yang mengandung:", downloadId);
+        
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.includes(downloadId)) {
+                console.log(`Found matching key: "${key}"`);
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    if (data && typeof data === 'object') {
+                        downloadData = data;
+                        foundKey = key;
+                        console.log(`✅ Menggunakan key: "${key}"`);
+                        break;
+                    }
+                } catch (e) {
+                    // Skip invalid JSON
+                }
+            }
+        }
+    }
+    
+    // 4. DEBUG DATA YANG DITEMUKAN
+    if (downloadData) {
+        console.log("📊 Data yang ditemukan:", {
+            key: foundKey,
+            hasId: !!downloadData.id,
+            id: downloadData.id,
+            hasFiles: !!downloadData.files,
+            fileCount: downloadData.files ? downloadData.files.length : 0,
+            name: downloadData.name,
+            sampleFile: downloadData.files ? downloadData.files[0] : null
+        });
+        
+        // Validasi data
+        if (!downloadData.id || !downloadData.files || downloadData.files.length === 0) {
+            console.error("❌ Data tidak lengkap!");
+            showError("Data tidak lengkap. File mungkin sudah dihapus.");
+            return;
+        }
+        
+        // 5. TAMPILKAN HALAMAN
+        showDownloadPage(downloadData, userName);
+        
+    } else {
+        console.error("❌ TIDAK ADA DATA YANG DITEMUKAN!");
+        
+        // Tampilkan semua data untuk debugging
+        console.log("📋 Semua data di localStorage:");
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.includes('download') || key.includes('dl_')) {
+                console.log(`Key: "${key}"`);
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    console.log(`  ID: ${data.id}, Files: ${data.files ? data.files.length : 0}`);
+                } catch (e) {
+                    console.log(`  (bukan JSON valid)`);
+                }
+            }
+        }
+        
         showError(`
-            ❌ Data tidak ditemukan!<br><br>
-            <strong>Kemungkinan:</strong><br>
-            • Buka di browser berbeda<br>
-            • Cache dibersihkan<br><br>
+            ❌ DATA TIDAK DITEMUKAN<br><br>
+            <strong>Download ID:</strong> ${downloadId}<br>
+            <strong>Dicari dengan key:</strong> download_${downloadId}<br><br>
+            <strong>Kemungkinan penyebab:</strong><br>
+            1. Data sudah expired (24 jam)<br>
+            2. Browser cache dibersihkan<br>
+            3. Dibuka di browser/device berbeda<br><br>
             <strong>Solusi:</strong><br>
             • Minta link baru dari photo booth<br>
-            • Photo booth harus kirim file langsung (bukan link)
+            • Buka di browser yang sama
         `);
-        return;
     }
-    
-    // Tampilkan halaman
-    showDownloadPage(downloadData, userName);
 });
-
-// 🔥 FUNGSI BARU: Handle data dari URL
-function handleUrlData(urlData) {
-    console.log("Data dari URL:", urlData);
-    
-    // Buat object data sederhana
-    const downloadData = {
-        id: urlData.id,
-        name: urlData.name,
-        files: Array(urlData.fileCount).fill().map((_, i) => ({
-            type: 'photo',
-            data: '', // Data kosong karena tidak bisa dibawa di URL
-            timestamp: Date.now()
-        })),
-        expiresAt: urlData.expiresAt
-    };
-    
-    // Tampilkan info khusus
-    const loading = document.getElementById('loading');
-    if (loading) {
-        loading.innerHTML = `
-            <div style="text-align: center; padding: 30px;">
-                <div style="font-size: 50px; color: #25D366;">📱</div>
-                <h3>Link dari WhatsApp</h3>
-                <p><strong>Untuk: ${urlData.name}</strong></p>
-                <p>${urlData.fileCount} file tersedia</p>
-                
-                <div style="background: #ff9800; color: white; padding: 15px; border-radius: 10px; margin: 20px 0;">
-                    ⚠ <strong>File tidak bisa didownload via link</strong><br>
-                    Data foto/video terlalu besar untuk dikirim via link WhatsApp.
-                </div>
-                
-                <p style="color: #666; font-size: 14px;">
-                    <strong>Silakan minta:</strong><br>
-                    1. Photo booth kirim file langsung via WhatsApp<br>
-                    2. Atau datang ke photo booth untuk ambil file
-                </p>
-                
-                <button onclick="window.history.back()" style="background: #25D366; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-top: 20px;">
-                    ← Kembali
-                </button>
-            </div>
-        `;
-    }
-}
 
 function showDownloadPage(data, userName) {
     console.log("🎨 Menampilkan halaman untuk:", userName);
@@ -215,5 +258,6 @@ function showError(message) {
         `;
     }
 }
+
 
 
