@@ -1,45 +1,144 @@
 // visitor-download.js - VERSI BERSIH
+// visitor-download.js - VERSI DEBUG DETAIL
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("📥 Download page loaded");
+    console.log("=== DOWNLOAD PAGE DEBUG ===");
     
+    // 1. Tampilkan semua localStorage keys
+    console.log("🔑 Semua localStorage keys:", Object.keys(localStorage));
+    
+    // 2. Ambil parameter URL
     const urlParams = new URLSearchParams(window.location.search);
     const downloadId = urlParams.get('download');
     const userName = urlParams.get('name') || 'Pengunjung';
     
-    console.log("Params:", { downloadId, userName });
-    
-    if (!downloadId) {
-        showError("Link tidak valid!");
-        return;
-    }
-    
-    // Cari data
-    const dataKey = `download_${downloadId}`;
-    const downloadData = JSON.parse(localStorage.getItem(dataKey) || '{}');
-    
-    console.log("Data dari localStorage:", {
-        key: dataKey,
-        found: !!downloadData.id,
-        files: downloadData.files ? downloadData.files.length : 0
+    console.log("📋 URL Parameters:", { 
+        downloadId: downloadId,
+        userName: userName,
+        fullURL: window.location.href 
     });
     
-    if (!downloadData.id) {
-        showError("Data tidak ditemukan!");
+    if (!downloadId) {
+        console.error("❌ ERROR: Tidak ada downloadId di URL");
+        showError("Link tidak valid! Tidak ada ID download.");
         return;
     }
     
-    if (!downloadData.files || downloadData.files.length === 0) {
-        showError("Tidak ada file!");
-        return;
+    // 3. CARI DATA DENGAN BERBAGAI CARA
+    let downloadData = null;
+    let foundKey = null;
+    
+    // Cara 1: Coba dengan key "download_"
+    const key1 = `download_${downloadId}`;
+    console.log(`Mencari dengan key: "${key1}"`);
+    const data1 = localStorage.getItem(key1);
+    
+    if (data1) {
+        console.log(`✅ Ditemukan dengan key: "${key1}"`);
+        foundKey = key1;
+        try {
+            downloadData = JSON.parse(data1);
+        } catch (e) {
+            console.error(`Error parsing "${key1}":`, e);
+        }
     }
     
-    // Tampilkan data
-    showDownloadPage(downloadData, userName);
+    // Cara 2: Coba key tanpa prefix (kalau ID sudah lengkap)
+    if (!downloadData && downloadId.startsWith('dl_')) {
+        const key2 = downloadId;
+        console.log(`Mencari dengan key: "${key2}"`);
+        const data2 = localStorage.getItem(key2);
+        
+        if (data2) {
+            console.log(`✅ Ditemukan dengan key: "${key2}"`);
+            foundKey = key2;
+            try {
+                downloadData = JSON.parse(data2);
+            } catch (e) {
+                console.error(`Error parsing "${key2}":`, e);
+            }
+        }
+    }
+    
+    // Cara 3: Cari semua key yang mengandung downloadId
+    if (!downloadData) {
+        console.log("🔍 Mencari semua key yang mengandung:", downloadId);
+        
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.includes(downloadId)) {
+                console.log(`Found matching key: "${key}"`);
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    if (data && typeof data === 'object') {
+                        downloadData = data;
+                        foundKey = key;
+                        console.log(`✅ Menggunakan key: "${key}"`);
+                        break;
+                    }
+                } catch (e) {
+                    // Skip invalid JSON
+                }
+            }
+        }
+    }
+    
+    // 4. DEBUG DATA YANG DITEMUKAN
+    if (downloadData) {
+        console.log("📊 Data yang ditemukan:", {
+            key: foundKey,
+            hasId: !!downloadData.id,
+            id: downloadData.id,
+            hasFiles: !!downloadData.files,
+            fileCount: downloadData.files ? downloadData.files.length : 0,
+            name: downloadData.name,
+            sampleFile: downloadData.files ? downloadData.files[0] : null
+        });
+        
+        // Validasi data
+        if (!downloadData.id || !downloadData.files || downloadData.files.length === 0) {
+            console.error("❌ Data tidak lengkap!");
+            showError("Data tidak lengkap. File mungkin sudah dihapus.");
+            return;
+        }
+        
+        // 5. TAMPILKAN HALAMAN
+        showDownloadPage(downloadData, userName);
+        
+    } else {
+        console.error("❌ TIDAK ADA DATA YANG DITEMUKAN!");
+        
+        // Tampilkan semua data untuk debugging
+        console.log("📋 Semua data di localStorage:");
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.includes('download') || key.includes('dl_')) {
+                console.log(`Key: "${key}"`);
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    console.log(`  ID: ${data.id}, Files: ${data.files ? data.files.length : 0}`);
+                } catch (e) {
+                    console.log(`  (bukan JSON valid)`);
+                }
+            }
+        }
+        
+        showError(`
+            ❌ DATA TIDAK DITEMUKAN<br><br>
+            <strong>Download ID:</strong> ${downloadId}<br>
+            <strong>Dicari dengan key:</strong> download_${downloadId}<br><br>
+            <strong>Kemungkinan penyebab:</strong><br>
+            1. Data sudah expired (24 jam)<br>
+            2. Browser cache dibersihkan<br>
+            3. Dibuka di browser/device berbeda<br><br>
+            <strong>Solusi:</strong><br>
+            • Minta link baru dari photo booth<br>
+            • Buka di browser yang sama
+        `);
+    }
 });
 
-// FUNGSI UNTUK TAMPILKAN HALAMAN
 function showDownloadPage(data, userName) {
-    console.log("Showing page for:", userName);
+    console.log("🎨 Menampilkan halaman untuk:", userName);
     
     // Update UI
     const nameEl = document.getElementById('userName');
@@ -51,17 +150,15 @@ function showDownloadPage(data, userName) {
     // Setup download button
     const downloadBtn = document.getElementById('downloadBtn');
     if (downloadBtn) {
-        // Hapus event lama, tambah baru
         const newBtn = downloadBtn.cloneNode(true);
         downloadBtn.parentNode.replaceChild(newBtn, downloadBtn);
         
         newBtn.addEventListener('click', function() {
-            console.log("Download clicked");
+            console.log("Download button clicked");
             downloadFiles(data, userName);
         });
         
         newBtn.textContent = `📥 DOWNLOAD ${data.files.length} FILE`;
-        newBtn.disabled = false;
     }
     
     // Stop loading
@@ -71,9 +168,8 @@ function showDownloadPage(data, userName) {
     if (loading) loading.style.display = 'none';
     if (content) content.style.display = 'block';
     
-    console.log("Page ready!");
+    console.log("✅ Halaman siap!");
 }
-
 // FUNGSI DOWNLOAD
 async function downloadFiles(data, userName) {
     console.log("Starting download...");
@@ -162,3 +258,4 @@ function showError(message) {
         `;
     }
 }
+
