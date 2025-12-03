@@ -1,198 +1,114 @@
 // download.js - Khusus untuk halaman download pengunjung
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("=== DOWNLOAD PAGE LOADED ===");
+    
     const urlParams = new URLSearchParams(window.location.search);
     const downloadId = urlParams.get('download');
     const userName = urlParams.get('name') || 'Pengunjung';
     
-    console.log("🔍 Mencari data untuk:", downloadId);
+    console.log("📋 URL Parameters:", { downloadId, userName });
     
     if (!downloadId) {
+        console.error("❌ ERROR: Tidak ada download ID");
         showError("Link tidak valid!");
         return;
     }
     
-    // 🔥 CARI DATA DENGAN BERBAGAI KEMUNGKINAN KEY
-    let downloadData = null;
+    console.log("🔍 Mencari data di localStorage...");
     
-    // Coba beberapa format key
-    const possibleKeys = [
-        `download_${downloadId}`,      // Format baru
-        downloadId,                    // Tanpa prefix
-        `dl_${downloadId}`,           // Dengan dl_
-        `${downloadId}_files`,        // Dengan suffix
-        `photo_${downloadId}`         // Mungkin dengan photo_
-    ];
+    // CARI DATA - cara sederhana
+    const downloadData = JSON.parse(localStorage.getItem(`download_${downloadId}`) || '{}');
     
-    for (const key of possibleKeys) {
-        const data = localStorage.getItem(key);
-        if (data) {
-            console.log(`✅ Data ditemukan dengan key: ${key}`);
-            try {
-                downloadData = JSON.parse(data);
-                break;
-            } catch (e) {
-                console.error(`Error parsing key ${key}:`, e);
-            }
-        }
-    }
+    console.log("📦 Data yang ditemukan:", {
+        hasId: !!downloadData.id,
+        hasFiles: !!downloadData.files,
+        fileCount: downloadData.files ? downloadData.files.length : 0,
+        dataSample: downloadData.files ? downloadData.files[0] : 'none'
+    });
     
-    // 🔥 JIKA TIDAK DITEMUKAN, CARI SEMUA KEY YANG MUNGKIN
-    if (!downloadData) {
-        console.log("🔎 Mencari di semua localStorage keys...");
-        
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key.includes(downloadId) || key.includes('download') || key.includes('dl_')) {
-                console.log(`Checking key: ${key}`);
-                try {
-                    const data = JSON.parse(localStorage.getItem(key));
-                    if (data && data.files && Array.isArray(data.files)) {
-                        console.log(`✅ Found with key: ${key}`);
-                        downloadData = data;
-                        break;
-                    }
-                } catch (e) {}
-            }
-        }
-    }
-    
-    // 🔥 JIKA MASIH TIDAK DITEMUKAN
-    if (!downloadData || !downloadData.files) {
-        showError(`
-            Data tidak ditemukan!<br><br>
-            <strong>Penyebab umum:</strong><br>
-            1. Dibuka di browser/device berbeda<br>
-            2. Cache browser dibersihkan<br>
-            3. Sesi sudah berakhir<br><br>
-            <strong>Solusi:</strong><br>
-            • Gunakan browser yang sama dengan photo booth<br>
-            • Minta link baru dari photo booth
-        `);
+    if (!downloadData.id) {
+        console.error("❌ Data tidak ditemukan di localStorage");
+        // Coba key lain
+        console.log("Keys di localStorage:", Object.keys(localStorage));
+        showError("Data tidak ditemukan!");
         return;
     }
     
-    console.log("📊 Data ditemukan:", downloadData);
+    if (!downloadData.files || downloadData.files.length === 0) {
+        console.error("❌ Tidak ada files dalam data");
+        showError("Tidak ada file yang bisa didownload!");
+        return;
+    }
     
-    // Tampilkan data
-    displayDownloadData(downloadData, userName);
+    console.log("✅ Data valid, menampilkan...");
+    
+    // 🔥 PANGGIL displayDownloadData
+    try {
+        displayDownloadData(downloadData, userName);
+    } catch (error) {
+        console.error("❌ Error di displayDownloadData:", error);
+        showError("Error menampilkan data: " + error.message);
+    }
 });
 
 // 🔥 FUNGSI INI HARUS ADA
 function displayDownloadData(data, userName) {
-    console.log("🖼 Menampilkan data untuk:", userName);
+    console.log("🎨 displayDownloadData dipanggil");
     
-    // 1. Update informasi dasar
-    document.getElementById('userName').textContent = userName;
-    document.getElementById('totalFiles').textContent = data.files.length;
-    
-    // 2. Hitung jumlah foto dan video
-    const photoCount = data.files.filter(f => f.type === 'photo').length;
-    const videoCount = data.files.filter(f => f.type === 'video').length;
-    
-    // 3. Tampilkan count jika ada elemennya
-    const photoCountElement = document.getElementById('photoCount');
-    const videoCountElement = document.getElementById('videoCount');
-    
-    if (photoCountElement) {
-        photoCountElement.textContent = photoCount;
-    }
-    
-    if (videoCountElement) {
-        videoCountElement.textContent = videoCount;
-    }
-    
-    // 4. Tampilkan expiry time
-    const expiryDate = new Date(data.expiresAt);
-    document.getElementById('expiryTime').textContent = expiryDate.toLocaleString('id-ID');
-    
-    // 5. Cek expired
-    if (new Date() > expiryDate) {
-        if (document.getElementById('expiredMessage')) {
-            document.getElementById('expiredMessage').style.display = 'block';
-        }
-        if (document.getElementById('content')) {
-            document.getElementById('content').style.display = 'none';
-        }
-        if (document.getElementById('loading')) {
-            document.getElementById('loading').style.display = 'none';
-        }
-        return;
-    }
-    
-    // 6. 🔥 TAMPILKAN PREVIEW FILE (jika ada elemen untuk preview)
-    const fileListContainer = document.getElementById('fileList');
-    if (fileListContainer) {
-        fileListContainer.innerHTML = '';
-        
-        data.files.forEach((file, index) => {
-            const fileItem = document.createElement('div');
-            fileItem.className = 'file-item';
-            fileItem.style.cssText = `
-                margin: 10px 0;
-                padding: 10px;
-                background: #f5f5f5;
-                border-radius: 8px;
-                display: flex;
-                align-items: center;
-            `;
-            
-            if (file.type === 'photo') {
-                fileItem.innerHTML = `
-                    <div style="width: 50px; height: 50px; margin-right: 15px;">
-                        <img src="${file.data}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
-                    </div>
-                    <div style="flex-grow: 1;">
-                        <strong>Foto ${index + 1}</strong><br>
-                        <small>${new Date(file.timestamp).toLocaleTimeString()}</small>
-                    </div>
-                    <button onclick="previewFile(${index})" style="background: #2196F3; color: white; border: none; padding: 8px 12px; border-radius: 5px; margin-right: 5px;">
-                        👁 Lihat
-                    </button>
-                `;
-            } else {
-                fileItem.innerHTML = `
-                    <div style="width: 50px; height: 50px; margin-right: 15px; background: #333; border-radius: 5px; display: flex; align-items: center; justify-content: center;">
-                        <span style="color: white; font-size: 24px;">🎥</span>
-                    </div>
-                    <div style="flex-grow: 1;">
-                        <strong>Video ${index + 1}</strong><br>
-                        <small>${new Date(file.timestamp).toLocaleTimeString()}</small>
-                    </div>
-                    <button onclick="previewFile(${index})" style="background: #2196F3; color: white; border: none; padding: 8px 12px; border-radius: 5px; margin-right: 5px;">
-                        ▶ Putar
-                    </button>
-                `;
-            }
-            
-            fileListContainer.appendChild(fileItem);
-        });
-    }
-    
-    // 7. 🔥 SETUP DOWNLOAD BUTTON
-    const downloadBtn = document.getElementById('downloadBtn');
-    if (downloadBtn) {
-        // Hapus event listener lama
-        const newDownloadBtn = downloadBtn.cloneNode(true);
-        downloadBtn.parentNode.replaceChild(newDownloadBtn, downloadBtn);
-        
-        // Tambah event listener baru
-        newDownloadBtn.addEventListener('click', function() {
-            console.log("Download button clicked");
-            downloadAllFiles(data, userName);
-        });
-        
-        // Update teks button
-        newDownloadBtn.innerHTML = `<i class="fas fa-download"></i> DOWNLOAD ${data.files.length} FILE (ZIP)`;
-    }
-    
-    // 8. Tampilkan konten
+    // PASTIKAN HENTIKAN LOADING
     const loadingElement = document.getElementById('loading');
     const contentElement = document.getElementById('content');
     
-    if (loadingElement) loadingElement.style.display = 'none';
-    if (contentElement) contentElement.style.display = 'block';
+    if (!loadingElement || !contentElement) {
+        console.error("❌ Elemen loading/content tidak ditemukan!");
+        return;
+    }
     
-    console.log("✅ Display selesai");
+    try {
+        // 1. Update info dasar
+        const userNameElement = document.getElementById('userName');
+        const totalFilesElement = document.getElementById('totalFiles');
+        
+        if (userNameElement) userNameElement.textContent = userName;
+        if (totalFilesElement) totalFilesElement.textContent = data.files.length;
+        
+        console.log("✅ Info dasar diupdate");
+        
+        // 2. Setup download button
+        const downloadBtn = document.getElementById('downloadBtn');
+        if (downloadBtn) {
+            console.log("✅ Download button ditemukan");
+            
+            // Hapus event listener lama
+            downloadBtn.replaceWith(downloadBtn.cloneNode(true));
+            const newBtn = document.getElementById('downloadBtn');
+            
+            newBtn.addEventListener('click', function() {
+                console.log("📥 Download button diklik");
+                downloadAllFiles(data, userName);
+            });
+            
+            // Update teks
+            newBtn.textContent = `📥 DOWNLOAD ${data.files.length} FILE`;
+        } else {
+            console.warn("⚠ Download button tidak ditemukan");
+        }
+        
+        // 3. HENTIKAN LOADING & TAMPILKAN KONTEN
+        loadingElement.style.display = 'none';
+        contentElement.style.display = 'block';
+        
+        console.log("✅ Loading dihentikan, konten ditampilkan");
+        
+    } catch (error) {
+        console.error("❌ Error dalam displayDownloadData:", error);
+        
+        // Fallback: tetap hentikan loading
+        loadingElement.style.display = 'none';
+        if (contentElement) contentElement.style.display = 'block';
+        
+        showError("Error menampilkan data");
+    }
 }
 
 // 🔥 TAMBAH FUNGSI PREVIEW
@@ -309,6 +225,7 @@ function showError(message) {
     `;
 
 }
+
 
 
 
